@@ -21,7 +21,7 @@ DialogComponent::DialogComponent(int edit_id, int clone_id, QWidget *parent) :
         setWindowTitle("Add Component");
 
 	if (clone_id != -1) {
-		
+
 	}
 }
 
@@ -31,7 +31,7 @@ DialogComponent::~DialogComponent()
 }
 
 void DialogComponent::setup_combos()
-{	
+{
 	QSqlQuery query;
 
 	query.exec("SELECT category_id, name FROM category");
@@ -40,14 +40,14 @@ void DialogComponent::setup_combos()
 		QString name = query.value(1).toString();
 		ui->cb_category->addItem(name, QVariant(id));
 	}
-	
+
 	query.exec("SELECT type_id, name FROM type");
 	while (query.next()) {
 		int id = query.value(0).toInt();
 		QString name = query.value(1).toString();
 		ui->cb_type->addItem(name, QVariant(id));
 	}
-	
+
 	query.exec("SELECT footprint_id, name FROM footprint");
 	while (query.next()) {
 		int id = query.value(0).toInt();

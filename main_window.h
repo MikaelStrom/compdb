@@ -8,10 +8,10 @@
 #include <QSqlError>
 
 
-class MyModel : public QSqlRelationalTableModel
+class RelTabModel : public QSqlRelationalTableModel
 {
 public:
-    explicit MyModel(QObject *parent = 0, QSqlDatabase db = QSqlDatabase())
+    explicit RelTabModel(QObject *parent = 0, QSqlDatabase db = QSqlDatabase())
 		: QSqlRelationalTableModel(parent, db) {};
 
 //    virtual Qt::ItemFlags flags(const QModelIndex& index) const // override
@@ -52,7 +52,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
 	QSqlDatabase db;
-	MyModel *model;
+    RelTabModel *model;
 
 	void open_db(QString fname);
 	void setup_category();

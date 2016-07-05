@@ -1,7 +1,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
+#include "main_window.h"
+#include "ui_main_window.h"
 #include "dialog_category.h"
 #include "dialog_type.h"
 #include "dialog_footprint.h"
@@ -36,7 +36,7 @@ void MainWindow::on_actionOpen_triggered()
 
 void MainWindow::open_db(QString fname)
 {
-	QSqlTableModel *old = model;
+    RelTabModel *old = model;
 
 	if (db.open()) {
 		db.close();
@@ -48,7 +48,7 @@ void MainWindow::open_db(QString fname)
 		return;
 	}
 
-	model = new MyModel(this);
+    model = new RelTabModel(this);
 	model->setTable("component");
 	model->setEditStrategy(QSqlTableModel::OnRowChange);
 	model->setRelation(model->fieldIndex("category"), QSqlRelation("category", "category_id", "name"));
@@ -70,6 +70,7 @@ void MainWindow::open_db(QString fname)
 	model->setHeaderData(model->fieldIndex("description"), Qt::Horizontal, tr("Description"));
 
 	ui->tableView->setModel(model);
+	ui->tableView->setItemDelegate(new QSqlRelationalDelegate(ui->tableView));
 	ui->tableView->hideColumn(0);
 
 	if (!model->select()) {
@@ -83,7 +84,6 @@ void MainWindow::open_db(QString fname)
 	setup_category();
 	setup_type();
 	setup_footprint();
-
 }
 
 void MainWindow::setup_category()

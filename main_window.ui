@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>775</width>
-    <height>429</height>
+    <width>1137</width>
+    <height>538</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -193,7 +193,17 @@
         <number>6</number>
        </property>
        <item>
-        <widget class="QTableView" name="tableView"/>
+        <widget class="QTableView" name="tableView">
+         <property name="showGrid">
+          <bool>false</bool>
+         </property>
+         <property name="gridStyle">
+          <enum>Qt::NoPen</enum>
+         </property>
+         <property name="sortingEnabled">
+          <bool>true</bool>
+         </property>
+        </widget>
        </item>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -259,7 +269,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>775</width>
+     <width>1137</width>
      <height>22</height>
     </rect>
    </property>
