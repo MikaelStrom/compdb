@@ -1,0 +1,12 @@
+.DS_Store
+*.swp
+*.swo
+*.app
+*.db
+*.db.*
+*.db-journal
+debug
+release
+Makefile
+bak/
+.qmake.*
