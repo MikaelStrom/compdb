@@ -45,7 +45,7 @@ void DialogType::on_pb_delete_clicked()
         int dbIndex = index.data().toInt();
    
 		QSqlQuery query; 
-		query.prepare("DELETE FROM type WHERE category_id = :id");
+		query.prepare("DELETE FROM type WHERE type_id = :id");
 		query.bindValue(":id", dbIndex);
 		if (!query.exec())
             QMessageBox::critical(this, "compdb", "Can't delete type: " + query.lastError().text());
@@ -58,9 +58,3 @@ void DialogType::on_pb_close_clicked()
 {
 	close();
 }
-
-void DialogType::on_row_select()
-{
-
-}
-

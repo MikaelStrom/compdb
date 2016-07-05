@@ -20,7 +20,6 @@ private slots:
     void on_pb_new_clicked();
     void on_pb_delete_clicked();
     void on_pb_close_clicked();
-	void on_row_select();
 
 private:
 	QSqlTableModel *model;

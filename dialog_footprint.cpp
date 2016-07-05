@@ -1,43 +1,43 @@
 #include <QMessageBox>
-#include "dialog_type.h"
-#include "ui_dialog_type.h"
+#include "dialog_footprint.h"
+#include "ui_dialog_footprint.h"
 
-DialogType::DialogType(QWidget *parent) :
+DialogFootprint::DialogFootprint(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::DialogType)
+    ui(new Ui::DialogFootprint)
 {
     ui->setupUi(this);
 
-//	connect(view, SIGNAL(clicked(const QModelIndex&)), this, SLOT(recordSelected()));
-
 	model = new QSqlTableModel(this);
-	model->setTable("type");
+	model->setTable("footprint");
 	model->setEditStrategy(QSqlTableModel::OnRowChange);
+    model->setHeaderData(model->fieldIndex("name"), Qt::Horizontal, tr("Footprint"));
+    model->setHeaderData(model->fieldIndex("description"), Qt::Horizontal, tr("Description"));
+    if (!model->select())
+        QMessageBox::critical(this, "compdb", "Can't open table footprint: " + model->lastError().text());
+
     ui->tableView->setModel(model);
 	ui->tableView->hideColumn(0);
-
-    if (!model->select())
-        QMessageBox::critical(this, "compdb", "Can't open table type: " + model->lastError().text());
 }
 
-DialogType::~DialogType()
+DialogFootprint::~DialogFootprint()
 {
     delete ui;
 }
 
-void DialogType::on_pb_new_clicked()
+void DialogFootprint::on_pb_new_clicked()
 {
 	QSqlQuery query;
-    query.prepare("INSERT INTO type (name) VALUES ('<Type>')");
+    query.prepare("INSERT INTO footprint (name) VALUES ('<Footprint>')");
 	query.exec();
 	model->select();
 	
 	QModelIndex index = model->index(model->rowCount() - 1, 1);
-	ui->tableView->scrollToBottom();
-	ui->tableView->edit(index);
+    ui->tableView->selectRow(model->rowCount() - 1);
+    ui->tableView->edit(index);
 }
 
-void DialogType::on_pb_delete_clicked()
+void DialogFootprint::on_pb_delete_clicked()
 {
     QModelIndexList selected = ui->tableView->selectionModel()->selectedIndexes();
     if (selected.count() == 1) {
@@ -45,22 +45,16 @@ void DialogType::on_pb_delete_clicked()
         int dbIndex = index.data().toInt();
    
 		QSqlQuery query; 
-		query.prepare("DELETE FROM type WHERE category_id = :id");
+		query.prepare("DELETE FROM footprint WHERE footprint_id = :id");
 		query.bindValue(":id", dbIndex);
 		if (!query.exec())
-            QMessageBox::critical(this, "compdb", "Can't delete type: " + query.lastError().text());
+            QMessageBox::critical(this, "compdb", "Can't delete footprint: " + query.lastError().text());
 
 		model->select();
 	}
 }
 
-void DialogType::on_pb_close_clicked()
+void DialogFootprint::on_pb_close_clicked()
 {
 	close();
 }
-
-void DialogType::on_row_select()
-{
-
-}
-

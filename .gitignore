@@ -10,3 +10,5 @@ release
 Makefile
 bak/
 .qmake.*
+*.o
+moc_*

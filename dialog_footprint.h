@@ -1,30 +1,29 @@
-#ifndef DIALOG_TYPE_H
-#define DIALOG_TYPE_H
+#ifndef DIALOG_FOOTPRINT_H
+#define DIALOG_FOOTPRINT_H
 
 #include <QDialog>
 #include <QtSql>
 
 namespace Ui {
-class DialogType;
+class DialogFootprint;
 }
 
-class DialogType : public QDialog
+class DialogFootprint : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit DialogType(QWidget *parent = 0);
-    ~DialogType();
+    explicit DialogFootprint(QWidget *parent = 0);
+    ~DialogFootprint();
 
 private slots:
     void on_pb_new_clicked();
     void on_pb_delete_clicked();
     void on_pb_close_clicked();
-	void on_row_select();
 
 private:
 	QSqlTableModel *model;
-    Ui::DialogType *ui;
+    Ui::DialogFootprint *ui;
 };
 
-#endif // DIALOG_TYPE_H
+#endif // DIALOG_FOOTPRINT_H

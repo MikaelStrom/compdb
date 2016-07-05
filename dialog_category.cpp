@@ -59,8 +59,3 @@ void DialogCategory::on_pb_close_clicked()
 	close();
 }
 
-void DialogCategory::on_row_select()
-{
-
-}
-
