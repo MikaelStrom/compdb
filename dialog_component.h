@@ -24,8 +24,8 @@ private slots:
     void on_btn_temp_clicked();
 
 private:
-	bool mode_update;
     Ui::DialogComponent *ui;
+	int update_id;
 
 	void setup_combos();
 };

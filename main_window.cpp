@@ -40,7 +40,7 @@ const char *sql_create[] = {
 	"	`footprint`			INTEGER,"
 	"	`value`				TEXT,"
 	"	`voltage`			TEXT,"
-	"	`tolerance`			REAL,"
+	"	`tolerance`			INTEGER,"
 	"	`temp`				INTEGER,"
 	"	`count`				INTEGER,"
 	"	`suppl`				TEXT,"
@@ -279,20 +279,29 @@ void MainWindow::on_pb_add_clicked()
 
 void MainWindow::on_pb_clone_clicked()
 {
-	int index = 1;
-	DialogComponent dialog(-1, index);
-	dialog.setModal(true);
-	dialog.exec();
-	update_view();
+    QModelIndexList selection = ui->tableView->selectionModel()->selectedIndexes();
+
+    if (selection.count() > 0) {
+		int id = model->index(selection.at(0).row(), 0).data().toInt();
+
+		DialogComponent dialog(-1, id);
+		dialog.setModal(true);
+		dialog.exec();
+		update_view();
+	}
 }
 
 void MainWindow::on_pb_edit_clicked()
 {
-	int index = 1;
-	DialogComponent dialog(index);
-	dialog.setModal(true);
-	dialog.exec();
-	update_view();
+    QModelIndexList selection = ui->tableView->selectionModel()->selectedIndexes();
+
+    if (selection.count() > 0) {
+		int id = model->index(selection.at(0).row(), 0).data().toInt();
+		DialogComponent dialog(id);
+		dialog.setModal(true);
+		dialog.exec();
+		update_view();
+	}
 }
 
 void MainWindow::on_pb_delete_clicked()

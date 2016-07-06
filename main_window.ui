@@ -241,7 +241,7 @@
          <item>
           <widget class="QPushButton" name="pb_clone">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="text">
             <string>Clone</string>
@@ -251,7 +251,7 @@
          <item>
           <widget class="QPushButton" name="pb_edit">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="text">
             <string>Edit</string>
