@@ -47,7 +47,7 @@ void DialogFootprint::on_pb_new_clicked()
 void DialogFootprint::on_pb_delete_clicked()
 {
     QModelIndexList selected = ui->tableView->selectionModel()->selectedIndexes();
-    if (selected.count() == 1) {
+    if (selected.count() > 0) {
         QModelIndex index = model->index(selected.at(0).row(), 0);
         int dbIndex = index.data().toInt();
    
