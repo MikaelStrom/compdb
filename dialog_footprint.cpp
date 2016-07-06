@@ -8,33 +8,39 @@ DialogFootprint::DialogFootprint(QWidget *parent) :
 {
     ui->setupUi(this);
 
-	model = new QSqlTableModel(this);
+	model = new QSqlRelationalTableModel(this);
 	model->setTable("footprint");
 	model->setEditStrategy(QSqlTableModel::OnRowChange);
-    model->setHeaderData(model->fieldIndex("name"), Qt::Horizontal, tr("Footprint"));
-    model->setHeaderData(model->fieldIndex("description"), Qt::Horizontal, tr("Description"));
+	model->setRelation(2, QSqlRelation("mounting", "id", "name"));
+    model->setHeaderData(1, Qt::Horizontal, tr("Footprint"));
+    model->setHeaderData(2, Qt::Horizontal, tr("Mounting"));
+    model->setHeaderData(3, Qt::Horizontal, tr("Description"));
     if (!model->select())
         QMessageBox::critical(this, "compdb", "Can't open table footprint: " + model->lastError().text());
 
     ui->tableView->setModel(model);
+	ui->tableView->setItemDelegate(new QSqlRelationalDelegate(ui->tableView));
 	ui->tableView->hideColumn(0);
 }
 
 DialogFootprint::~DialogFootprint()
 {
     delete ui;
+	delete model;
 }
 
 void DialogFootprint::on_pb_new_clicked()
 {
 	QSqlQuery query;
-    query.prepare("INSERT INTO footprint (name) VALUES ('<Footprint>')");
-	query.exec();
-	model->select();
-	
-	QModelIndex index = model->index(model->rowCount() - 1, 1);
-    ui->tableView->selectRow(model->rowCount() - 1);
-    ui->tableView->edit(index);
+    query.prepare("INSERT INTO footprint (name, mounting) VALUES ('<Footprint>', 1)");
+	if (!query.exec())
+		QMessageBox::critical(this, "compdb", "Can't add footprint: " + query.lastError().text());
+	else {
+		model->select();
+		QModelIndex index = model->index(model->rowCount() - 1, 1);
+		ui->tableView->selectRow(model->rowCount() - 1);
+		ui->tableView->edit(index);
+	}
 }
 
 void DialogFootprint::on_pb_delete_clicked()
@@ -45,7 +51,7 @@ void DialogFootprint::on_pb_delete_clicked()
         int dbIndex = index.data().toInt();
    
 		QSqlQuery query; 
-		query.prepare("DELETE FROM footprint WHERE footprint_id = :id");
+		query.prepare("DELETE FROM footprint WHERE id = :id");
 		query.bindValue(":id", dbIndex);
 		if (!query.exec())
             QMessageBox::critical(this, "compdb", "Can't delete footprint: " + query.lastError().text());

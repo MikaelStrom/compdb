@@ -11,13 +11,13 @@ DialogType::DialogType(QWidget *parent) :
 //	connect(view, SIGNAL(clicked(const QModelIndex&)), this, SLOT(recordSelected()));
 
 	model = new QSqlTableModel(this);
-	model->setTable("type");
+	model->setTable("mounting");
 	model->setEditStrategy(QSqlTableModel::OnRowChange);
     ui->tableView->setModel(model);
 	ui->tableView->hideColumn(0);
 
     if (!model->select())
-        QMessageBox::critical(this, "compdb", "Can't open table type: " + model->lastError().text());
+        QMessageBox::critical(this, "compdb", "Can't open table mounting: " + model->lastError().text());
 }
 
 DialogType::~DialogType()
@@ -28,7 +28,7 @@ DialogType::~DialogType()
 void DialogType::on_pb_new_clicked()
 {
 	QSqlQuery query;
-    query.prepare("INSERT INTO type (name) VALUES ('<Type>')");
+    query.prepare("INSERT INTO mounting (name) VALUES ('<Mount>')");
 	query.exec();
 	model->select();
 	
@@ -45,10 +45,10 @@ void DialogType::on_pb_delete_clicked()
         int dbIndex = index.data().toInt();
    
 		QSqlQuery query; 
-		query.prepare("DELETE FROM type WHERE type_id = :id");
+		query.prepare("DELETE FROM mounting WHERE id = :id");
 		query.bindValue(":id", dbIndex);
 		if (!query.exec())
-            QMessageBox::critical(this, "compdb", "Can't delete type: " + query.lastError().text());
+            QMessageBox::critical(this, "compdb", "Can't delete mounting: " + query.lastError().text());
 
 		model->select();
 	}

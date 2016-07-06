@@ -38,8 +38,11 @@
     </property>
     <item>
      <widget class="QGroupBox" name="group_filter">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="focusPolicy">
-       <enum>Qt::TabFocus</enum>
+       <enum>Qt::StrongFocus</enum>
       </property>
       <property name="title">
        <string>Filter</string>
@@ -72,6 +75,9 @@
        </item>
        <item>
         <widget class="QComboBox" name="cb_category">
+         <property name="focusPolicy">
+          <enum>Qt::StrongFocus</enum>
+         </property>
          <item>
           <property name="text">
            <string>&lt;All&gt;</string>
@@ -93,14 +99,17 @@
         </spacer>
        </item>
        <item>
-        <widget class="QLabel" name="label">
+        <widget class="QLabel" name="label_3">
          <property name="text">
-          <string>Type</string>
+          <string>Footprint</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="cb_type">
+        <widget class="QComboBox" name="cb_footprint">
+         <property name="focusPolicy">
+          <enum>Qt::StrongFocus</enum>
+         </property>
          <item>
           <property name="text">
            <string>&lt;All&gt;</string>
@@ -109,7 +118,7 @@
         </widget>
        </item>
        <item>
-        <spacer name="horizontalSpacer_4">
+        <spacer name="horizontalSpacer_5">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
@@ -122,23 +131,17 @@
         </spacer>
        </item>
        <item>
-        <widget class="QLabel" name="label_3">
+        <widget class="QLabel" name="label_5">
          <property name="text">
-          <string>Footprint</string>
+          <string>Part No</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="cb_footprint">
-         <item>
-          <property name="text">
-           <string>&lt;All&gt;</string>
-          </property>
-         </item>
-        </widget>
+        <widget class="QLineEdit" name="le_part_no"/>
        </item>
        <item>
-        <spacer name="horizontalSpacer_5">
+        <spacer name="horizontalSpacer_6">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
@@ -163,15 +166,15 @@
       </layout>
       <zorder>le_value</zorder>
       <zorder>label_4</zorder>
-      <zorder>cb_type</zorder>
-      <zorder>label</zorder>
       <zorder>label_3</zorder>
       <zorder>cb_footprint</zorder>
       <zorder>cb_category</zorder>
       <zorder>label_2</zorder>
       <zorder>horizontalSpacer_3</zorder>
-      <zorder>horizontalSpacer_4</zorder>
       <zorder>horizontalSpacer_5</zorder>
+      <zorder>horizontalSpacer_6</zorder>
+      <zorder>label_5</zorder>
+      <zorder>le_part_no</zorder>
      </widget>
     </item>
     <item>
@@ -194,15 +197,27 @@
        </property>
        <item>
         <widget class="QTableView" name="tableView">
+         <property name="alternatingRowColors">
+          <bool>true</bool>
+         </property>
+         <property name="selectionMode">
+          <enum>QAbstractItemView::SingleSelection</enum>
+         </property>
          <property name="showGrid">
           <bool>false</bool>
          </property>
          <property name="gridStyle">
-          <enum>Qt::NoPen</enum>
+          <enum>Qt::DotLine</enum>
          </property>
          <property name="sortingEnabled">
           <bool>true</bool>
          </property>
+         <attribute name="verticalHeaderDefaultSectionSize">
+          <number>20</number>
+         </attribute>
+         <attribute name="verticalHeaderMinimumSectionSize">
+          <number>20</number>
+         </attribute>
         </widget>
        </item>
        <item>
@@ -225,6 +240,9 @@
          </item>
          <item>
           <widget class="QPushButton" name="pb_clone">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="text">
             <string>Clone</string>
            </property>
@@ -232,6 +250,9 @@
          </item>
          <item>
           <widget class="QPushButton" name="pb_edit">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="text">
             <string>Edit</string>
            </property>
@@ -239,6 +260,9 @@
          </item>
          <item>
           <widget class="QPushButton" name="pb_delete">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="text">
             <string>Delete</string>
            </property>
@@ -281,15 +305,15 @@
      <string>File</string>
     </property>
     <addaction name="actionOpen"/>
-    <addaction name="actionNew_database"/>
+    <addaction name="actionNew"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
      <string>Edit</string>
     </property>
-    <addaction name="actionType"/>
     <addaction name="actionCategory"/>
     <addaction name="actionFootprint"/>
+    <addaction name="actionType"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -318,13 +342,13 @@
   </action>
   <action name="actionType">
    <property name="text">
-    <string>Edit Types</string>
+    <string>Edit Mounting</string>
    </property>
    <property name="toolTip">
     <string>Edit Types</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+T</string>
+    <string>Ctrl+M</string>
    </property>
   </action>
   <action name="actionFootprint">
@@ -338,12 +362,17 @@
     <string>Ctrl+F</string>
    </property>
   </action>
-  <action name="actionNew_database">
+  <action name="actionNew">
    <property name="text">
     <string>New database...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="actionAdd">
+   <property name="text">
+    <string>Add</string>
    </property>
   </action>
  </widget>

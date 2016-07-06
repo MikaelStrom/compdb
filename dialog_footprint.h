@@ -22,7 +22,7 @@ private slots:
     void on_pb_close_clicked();
 
 private:
-	QSqlTableModel *model;
+	QSqlRelationalTableModel *model;
     Ui::DialogFootprint *ui;
 };
 

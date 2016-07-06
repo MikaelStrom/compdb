@@ -45,7 +45,7 @@ void DialogCategory::on_pb_delete_clicked()
         int dbIndex = index.data().toInt();
    
 		QSqlQuery query; 
-		query.prepare("DELETE FROM category WHERE category_id = :id");
+		query.prepare("DELETE FROM category WHERE id = :id");
 		query.bindValue(":id", dbIndex);
 		if (!query.exec())
             QMessageBox::critical(this, "compdb", "Can't delete category: " + query.lastError().text());

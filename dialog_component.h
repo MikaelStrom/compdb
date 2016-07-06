@@ -18,6 +18,11 @@ public:
 public Q_SLOTS:
     virtual void accept();
 
+private slots:
+    void on_btn_category_clicked();
+    void on_btn_footprint_clicked();
+    void on_btn_temp_clicked();
+
 private:
 	bool mode_update;
     Ui::DialogComponent *ui;

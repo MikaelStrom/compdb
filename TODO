@@ -1,0 +1,1 @@
+* Enforce integer, float etc for comp table edit, reimplement QSqlRelationalDelegate

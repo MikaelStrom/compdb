@@ -13,3 +13,6 @@ bak/
 *.o
 moc_*
 ui_*.h
+*.compdb
+*.sql
+tags

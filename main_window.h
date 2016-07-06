@@ -39,6 +39,7 @@ public:
 
 private slots:
     void on_actionOpen_triggered();
+    void on_actionNew_triggered();
     void on_actionCategory_triggered();
     void on_actionType_triggered();
     void on_actionFootprint_triggered();
@@ -55,8 +56,8 @@ private:
     RelTabModel *model;
 
 	void open_db(QString fname);
+	void create_db(QString fname);
 	void setup_category();
-	void setup_type();
 	void setup_footprint();
 	void update_view();
 };
