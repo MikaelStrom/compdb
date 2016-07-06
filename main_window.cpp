@@ -242,7 +242,12 @@ void MainWindow::setup_footprint()
 
 void MainWindow::update_view()
 {
-	model->select();
+    int selection = ui->tableView->selectionModel()->currentIndex().row();
+
+    model->select();
+
+    if (selection != -1)
+        ui->tableView->selectRow(selection);
 }
 
 void MainWindow::on_actionCategory_triggered()
