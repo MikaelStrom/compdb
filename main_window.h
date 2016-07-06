@@ -37,16 +37,22 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+public slots:
+	void selection_changed(const QItemSelection &, const QItemSelection &);
+
 private slots:
-    void on_actionOpen_triggered();
-    void on_actionNew_triggered();
-    void on_actionCategory_triggered();
-    void on_actionType_triggered();
-    void on_actionFootprint_triggered();
-    void on_pb_add_clicked();
-    void on_pb_clone_clicked();
-    void on_pb_edit_clicked();
-    void on_pb_delete_clicked();
+    void on_action_open_triggered();
+    void on_action_new_triggered();
+    void on_action_close_triggered();
+    void on_action_exit_triggered();
+    void on_action_add_triggered();
+    void on_action_clone_triggered();
+    void on_action_edit_triggered();
+    void on_action_delete_triggered();
+    void on_action_category_triggered();
+    void on_action_type_triggered();
+    void on_action_footprint_triggered();
+    void on_action_temp_triggered();
     void on_group_filter_toggled(bool arg1);
     void on_le_value_textChanged(const QString &arg1);
 
@@ -55,11 +61,12 @@ private:
 	QSqlDatabase db;
     RelTabModel *model;
 
+	void update_controls();
+	void update_view();
 	void open_db(QString fname);
 	void create_db(QString fname);
 	void setup_category();
 	void setup_footprint();
-	void update_view();
 };
 
 #endif // MAINWINDOW_H

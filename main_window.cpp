@@ -6,6 +6,7 @@
 #include "dialog_category.h"
 #include "dialog_type.h"
 #include "dialog_footprint.h"
+#include "dialog_temp.h"
 #include "dialog_component.h"
 
 const char *sql_create[] = {
@@ -90,7 +91,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	db = QSqlDatabase::addDatabase("QSQLITE");
 
-	open_db("/Users/mike/c/compdb/components.compdb");
+	update_controls();
+
+//	open_db("/Users/mike/c/compdb/components.compdb");
 }
 
 MainWindow::~MainWindow()
@@ -99,7 +102,12 @@ MainWindow::~MainWindow()
 	delete ui;
 }
 
-void MainWindow::on_actionOpen_triggered()
+void MainWindow::selection_changed(const QItemSelection &, const QItemSelection &)
+{
+	update_controls();
+}
+
+void MainWindow::on_action_open_triggered()
 {
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open component database"), "", tr("Database files (*.compdb)"));
 
@@ -107,7 +115,7 @@ void MainWindow::on_actionOpen_triggered()
 		open_db(fileName);
 }
 
-void MainWindow::on_actionNew_triggered()
+void MainWindow::on_action_new_triggered()
 {
 	QString fileName = QFileDialog::getSaveFileName(this, tr("New component database"), "", tr("Database files (*.compdb)"));
 
@@ -119,6 +127,140 @@ void MainWindow::on_actionNew_triggered()
 		}
 		create_db(fileName);
 	}
+}
+
+void MainWindow::on_action_close_triggered()
+{
+	db.close();
+	if (model)
+		model->clear();
+	update_controls();
+}
+
+void MainWindow::on_action_exit_triggered()
+{
+	close();
+}
+
+void MainWindow::on_action_add_triggered()
+{
+	DialogComponent dialog;
+	dialog.setModal(true);
+	dialog.exec();
+	update_view();
+}
+
+void MainWindow::on_action_clone_triggered()
+{
+    QModelIndexList selection = ui->tableView->selectionModel()->selectedIndexes();
+
+    if (selection.count() > 0) {
+		int id = model->index(selection.at(0).row(), 0).data().toInt();
+
+		DialogComponent dialog(-1, id);
+		dialog.setModal(true);
+		dialog.exec();
+		update_view();
+	}
+}
+
+void MainWindow::on_action_edit_triggered()
+{
+    QModelIndexList selection = ui->tableView->selectionModel()->selectedIndexes();
+
+    if (selection.count() > 0) {
+		int id = model->index(selection.at(0).row(), 0).data().toInt();
+		DialogComponent dialog(id);
+		dialog.setModal(true);
+		dialog.exec();
+		update_view();
+	}
+}
+
+void MainWindow::on_action_delete_triggered()
+{
+    QModelIndexList selection = ui->tableView->selectionModel()->selectedIndexes();
+
+    if (selection.count() > 0 && QMessageBox::question(this, "compdb", tr("Delete selected component?")) == QMessageBox::Yes) {
+		int id = model->index(selection.at(0).row(), 0).data().toInt();
+
+		QSqlQuery query;
+		query.prepare("DELETE FROM component WHERE id = :id");
+		query.bindValue(":id", id);
+
+		if (!query.exec())
+			QMessageBox::critical(this, "compdb", "Can't delete component: " + query.lastError().text());
+		update_view();
+	}
+}
+
+void MainWindow::on_action_category_triggered()
+{
+	DialogCategory dialog;
+	dialog.setModal(true);
+	dialog.exec();
+	update_view();
+}
+
+void MainWindow::on_action_type_triggered()
+{
+	DialogType dialog;
+	dialog.setModal(true);
+	dialog.exec();
+	update_view();
+}
+
+void MainWindow::on_action_footprint_triggered()
+{
+	DialogFootprint dialog;
+	dialog.setModal(true);
+	dialog.exec();
+	update_view();
+}
+
+void MainWindow::on_action_temp_triggered()
+{
+	DialogTemp dialog;
+	dialog.setModal(true);
+	dialog.exec();
+	update_view();
+}
+
+void MainWindow::on_group_filter_toggled(bool)
+{
+	update_controls();
+}
+
+void MainWindow::on_le_value_textChanged(const QString &arg1)
+{
+	qDebug() << arg1;
+}
+
+void MainWindow::update_controls()
+{
+	bool db_open = db.isOpen();
+    bool selected = db_open && ui->tableView->selectionModel()->selectedIndexes().count() > 0;
+
+	ui->group_components->setEnabled(db_open);
+	ui->group_filter->setEnabled(db_open);
+	ui->action_add->setEnabled(db_open);
+	ui->action_clone->setEnabled(selected);
+	ui->action_edit->setEnabled(selected);
+	ui->action_delete->setEnabled(selected);
+	ui->action_category->setEnabled(db_open);
+	ui->action_type->setEnabled(db_open);
+	ui->action_footprint->setEnabled(db_open);
+	ui->action_temp->setEnabled(db_open);
+}
+
+void MainWindow::update_view()
+{
+    int selection = ui->tableView->selectionModel()->currentIndex().row();
+
+    model->select();
+
+    if (selection != -1)
+        ui->tableView->selectRow(selection);
 }
 
 void MainWindow::open_db(QString fname)
@@ -164,14 +306,20 @@ void MainWindow::open_db(QString fname)
 
 	if (!model->select()) {
 		QMessageBox::critical(this, "compdb", "Can't open " + fname + ": " + model->lastError().text());
+		db.close();
 		return;
 	}
+
+	connect(ui->tableView->selectionModel(),
+			SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)),
+			SLOT(selection_changed(const QItemSelection &, const QItemSelection &)));
 
 	if (old)
 		delete old;
 
 	setup_category();
 	setup_footprint();
+	update_controls();
 }
 
 void MainWindow::create_db(QString fname)
@@ -180,6 +328,7 @@ void MainWindow::create_db(QString fname)
 		db.close();
 
 	db.setDatabaseName(fname);
+
 	if (! db.open()) {
 		QMessageBox::critical(this, "compdb", "Can't create " + fname + ": " + db.lastError().text());
 		return;
@@ -240,100 +389,4 @@ void MainWindow::setup_footprint()
 		ui->cb_footprint->setCurrentIndex(cur_index);
 }
 
-void MainWindow::update_view()
-{
-    int selection = ui->tableView->selectionModel()->currentIndex().row();
-
-    model->select();
-
-    if (selection != -1)
-        ui->tableView->selectRow(selection);
-}
-
-void MainWindow::on_actionCategory_triggered()
-{
-	DialogCategory dialog;
-	dialog.setModal(true);
-	dialog.exec();
-	update_view();
-}
-
-void MainWindow::on_actionType_triggered()
-{
-	DialogType dialog;
-	dialog.setModal(true);
-	dialog.exec();
-	update_view();
-}
-
-void MainWindow::on_actionFootprint_triggered()
-{
-	DialogFootprint dialog;
-	dialog.setModal(true);
-	dialog.exec();
-	update_view();
-}
-
-void MainWindow::on_pb_add_clicked()
-{
-	DialogComponent dialog;
-	dialog.setModal(true);
-	dialog.exec();
-	update_view();
-}
-
-void MainWindow::on_pb_clone_clicked()
-{
-    QModelIndexList selection = ui->tableView->selectionModel()->selectedIndexes();
-
-    if (selection.count() > 0) {
-		int id = model->index(selection.at(0).row(), 0).data().toInt();
-
-		DialogComponent dialog(-1, id);
-		dialog.setModal(true);
-		dialog.exec();
-		update_view();
-	}
-}
-
-void MainWindow::on_pb_edit_clicked()
-{
-    QModelIndexList selection = ui->tableView->selectionModel()->selectedIndexes();
-
-    if (selection.count() > 0) {
-		int id = model->index(selection.at(0).row(), 0).data().toInt();
-		DialogComponent dialog(id);
-		dialog.setModal(true);
-		dialog.exec();
-		update_view();
-	}
-}
-
-void MainWindow::on_pb_delete_clicked()
-{
-    QModelIndexList selection = ui->tableView->selectionModel()->selectedIndexes();
-
-    if (selection.count() > 0) {
-		int id = model->index(selection.at(0).row(), 0).data().toInt();
-
-		QSqlQuery query;
-		query.prepare("DELETE FROM component WHERE id = :id");
-		query.bindValue(":id", id);
-
-		if (!query.exec())
-			QMessageBox::critical(this, "compdb", "Can't delete component: " + query.lastError().text());
-		update_view();
-	}
-}
-
-void MainWindow::on_group_filter_toggled(bool enabled)
-{
-	if (enabled) {
-	}
-}
-
-void MainWindow::on_le_value_textChanged(const QString &arg1)
-{
-	qDebug() << arg1;
-}
 

@@ -9,7 +9,8 @@
 
 DialogComponent::DialogComponent(int edit_id, int clone_id, QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::DialogComponent)
+    ui(new Ui::DialogComponent),
+	update_id(-1)
 {
     ui->setupUi(this);
 
@@ -19,11 +20,11 @@ DialogComponent::DialogComponent(int edit_id, int clone_id, QWidget *parent) :
 
 	if (edit_id != -1) {
 		update_id = edit_id;
-        setWindowTitle("Edit Component");
-	} else {
-        setWindowTitle("Add Component");
-		update_id = -1;
-	}
+        setWindowTitle("Edit component");
+	} else if (clone_id != -1)
+        setWindowTitle("Clone component");
+	else
+        setWindowTitle("Add component");
 
 	if (clone_id != -1 || edit_id != -1) {
 		QSqlQuery query;
@@ -120,7 +121,7 @@ void DialogComponent::accept()
 			"  (category, part_no, footprint, value, voltage, tolerance, temp, count, "
 			"  suppl, suppl_part_no, price, price_vol, design_item_id, description) "
 			"VALUES (:category, :part_no, :footprint, :value, :voltage, :tolerance, :temp, :count, "
-			":suppl, :suppl_part_no, :price, :price_vol, :design_item_id, :description)");
+			"  :suppl, :suppl_part_no, :price, :price_vol, :design_item_id, :description)");
 	}
 
     query.bindValue(":category", ui->cb_category->currentData().toInt());
