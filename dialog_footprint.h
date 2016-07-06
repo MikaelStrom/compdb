@@ -21,6 +21,8 @@ private slots:
     void on_pb_delete_clicked();
     void on_pb_close_clicked();
 
+    void on_pb_mounting_clicked();
+
 private:
 	QSqlRelationalTableModel *model;
     Ui::DialogFootprint *ui;

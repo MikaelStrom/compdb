@@ -17,13 +17,13 @@ const char *sql_create[] = {
 	"CREATE TABLE \"mounting\" ("
 	"	`id`				INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,"
 	"	`name`				TEXT NOT NULL"
-	");",	
+	");",
 
 	"CREATE TABLE \"temp\" ("
 	"	`id`				INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,"
 	"	`name`				TEXT NOT NULL,"
 	"	`description`		TEXT"
-	");",	
+	");",
 
 	"CREATE TABLE \"footprint\" ("
 	"	`id`				INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,"
@@ -306,6 +306,19 @@ void MainWindow::on_pb_edit_clicked()
 
 void MainWindow::on_pb_delete_clicked()
 {
+    QModelIndexList selection = ui->tableView->selectionModel()->selectedIndexes();
+
+    if (selection.count() > 0) {
+		int id = model->index(selection.at(0).row(), 0).data().toInt();
+
+		QSqlQuery query;
+		query.prepare("DELETE FROM component WHERE id = :id");
+		query.bindValue(":id", id);
+
+		if (!query.exec())
+			QMessageBox::critical(this, "compdb", "Can't delete component: " + query.lastError().text());
+		update_view();
+	}
 }
 
 void MainWindow::on_group_filter_toggled(bool enabled)

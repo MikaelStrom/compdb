@@ -376,10 +376,12 @@
   <tabstop>le_part_no</tabstop>
   <tabstop>le_value</tabstop>
   <tabstop>le_voltage</tabstop>
+  <tabstop>sp_tolerance</tabstop>
   <tabstop>cb_temp</tabstop>
   <tabstop>sp_count</tabstop>
   <tabstop>le_supplier</tabstop>
   <tabstop>le_supplier_part_no</tabstop>
+  <tabstop>sp_price</tabstop>
   <tabstop>sp_volume</tabstop>
   <tabstop>le_design_item_id</tabstop>
   <tabstop>le_descrtion</tabstop>

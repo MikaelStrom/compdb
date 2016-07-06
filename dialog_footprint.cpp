@@ -1,6 +1,7 @@
 #include <QMessageBox>
-#include "dialog_footprint.h"
 #include "ui_dialog_footprint.h"
+#include "dialog_footprint.h"
+#include "dialog_type.h"
 
 DialogFootprint::DialogFootprint(QWidget *parent) :
     QDialog(parent),
@@ -63,4 +64,12 @@ void DialogFootprint::on_pb_delete_clicked()
 void DialogFootprint::on_pb_close_clicked()
 {
 	close();
+}
+
+void DialogFootprint::on_pb_mounting_clicked()
+{
+    DialogType dialog;
+    dialog.setModal(true);
+    dialog.exec();
+    model->select();
 }
