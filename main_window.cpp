@@ -243,6 +243,7 @@ void MainWindow::update_controls()
 
 	ui->group_components->setEnabled(db_open);
 	ui->group_filter->setEnabled(db_open);
+	ui->action_close->setEnabled(db_open);
 	ui->action_add->setEnabled(db_open);
 	ui->action_clone->setEnabled(selected);
 	ui->action_edit->setEnabled(selected);
@@ -291,7 +292,7 @@ void MainWindow::open_db(QString fname)
 	model->setHeaderData(model->fieldIndex("part_no"), Qt::Horizontal, tr("Part No"));
 	model->setHeaderData(model->fieldIndex("value"), Qt::Horizontal, tr("Value"));
 	model->setHeaderData(model->fieldIndex("voltage"), Qt::Horizontal, tr("Voltage rating"));
-	model->setHeaderData(model->fieldIndex("tolerance"), Qt::Horizontal, tr("Tolerance"));
+	model->setHeaderData(model->fieldIndex("tolerance"), Qt::Horizontal, tr("Tolerance %"));
 	model->setHeaderData(model->fieldIndex("count"), Qt::Horizontal, tr("Count"));
 	model->setHeaderData(model->fieldIndex("suppl"), Qt::Horizontal, tr("Supplier"));
 	model->setHeaderData(model->fieldIndex("suppl_part_no"), Qt::Horizontal, tr("Supplier Part No"));
