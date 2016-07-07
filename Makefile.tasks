@@ -1,4 +1,5 @@
 QT_OSX_PATH = ../../Qt5.7.0/5.7/clang_64/bin
+MXE_PATH	= /opt/mxe
 
 dmg:
 	rm -rf compdb.dmg compdb.app
@@ -13,3 +14,8 @@ dmg-debug:
 	qmake -config debug
 	make -j4
 	$(QT_OSX_PATH)/macdeployqt compdb.app -dmg -verbose=3 -no-strip
+
+win:
+	make clean
+	$(MXE_PATH)/usr/i686-w64-mingw32.static/qt5/bin/qmake
+	export PATH=$(MXE_PATH)/usr/bin:$$PATH; make

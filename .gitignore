@@ -17,3 +17,5 @@ ui_*.h
 *.sql
 tags
 *.dmg
+*.Debug
+*.Release

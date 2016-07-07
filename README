@@ -1,28 +1,44 @@
-Requires Qt 5.2. 
+Requires Qt 5.2 or higher (developed on Qt5.7). 
 
-To build natively on Linux and OSX (MinGW not tested, but should work):
+
+Build on Linux
+--------------
 
 $ qmake -config release
 $ make
 
-To cross compile from Linux to a staticly linked 32.bit Windows executable:
+
+Build on OS X
+-------------
+
+To create the app placed in a compdb.dmg with bundled frameworks, do
+
+$ make -f Makefile.tasks dmg
+
+Note that Qt-path is hardcoded in the Makefile.tasks and might need to be adjusted.
+
+
+To cross compile from Linux to a staticly linked 32-bit Windows executable:
+---------------------------------------------------------------------------
+
+First install MXE
 
 $ git clone https://github.com/mxe/mxe.git
 $ sudo mv mxe /opt
 $ cd /opt/mxe
 $ make qtbase
-$ cd <compdb directory>
-$ make clean
-$ export PATH=/opt/mxe/usr/bin:$PATH
-$ /opt/mxe/usr/i686-w64-mingw32.static/qt5/bin/qmake
-$ make
 
-The static executable is found in release/, test with
+To build Windows executable
+
+$ make -f Makefile.tasks win
+
+The static executable is found in directory release.  Test with
 
 $ wine release/compdb.exe
 
 Eecutable runs on Windows 7 and up, 32 and 64-bit. 
 Qt5 wont work with XP unless built from source with som special flags.
+
 
 
 The Icon was crated by Double-J Design, http://www.doublejdesign.co.uk  
