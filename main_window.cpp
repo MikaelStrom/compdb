@@ -118,9 +118,12 @@ void MainWindow::on_action_new_triggered()
 	QString fileName = QFileDialog::getSaveFileName(this, tr("New component database"), "", tr("Database files (*.compdb)"));
 
 	if (fileName.size() > 0) {
-		QFile f(fileName);
-		if (f.exists() && !f.remove()) {
-			QMessageBox::critical(this, "compdb", "Can't remove " + f.fileName());
+		if (! fileName.endsWith(".compdb"))
+			fileName.append(".compdb");
+
+		QFile file(fileName);
+		if (file.exists() && !file.remove()) {
+			QMessageBox::critical(this, "compdb", "Can't remove " + file.fileName());
 			return;
 		}
 		create_db(fileName);
