@@ -10,20 +10,20 @@ class DialogCategory;
 
 class DialogCategory : public QDialog
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit DialogCategory(QWidget *parent = 0);
-    ~DialogCategory();
+	explicit DialogCategory(QWidget *parent = 0);
+	~DialogCategory();
 
 private slots:
-    void on_pb_new_clicked();
-    void on_pb_delete_clicked();
-    void on_pb_close_clicked();
+	void on_pb_new_clicked();
+	void on_pb_delete_clicked();
+	void on_pb_close_clicked();
 
 private:
 	QSqlTableModel *model;
-    Ui::DialogCategory *ui;
+	Ui::DialogCategory *ui;
 };
 
 #endif // DIALOG_CATEGORY_H

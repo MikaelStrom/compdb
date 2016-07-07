@@ -8,11 +8,11 @@
 #include "dialog_temp.h"
 
 DialogComponent::DialogComponent(int edit_id, int clone_id, QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::DialogComponent),
+	QDialog(parent),
+	ui(new Ui::DialogComponent),
 	update_id(-1)
 {
-    ui->setupUi(this);
+	ui->setupUi(this);
 
 	Q_ASSERT(!(edit_id != -1 && clone_id != -1));
 
@@ -20,11 +20,11 @@ DialogComponent::DialogComponent(int edit_id, int clone_id, QWidget *parent) :
 
 	if (edit_id != -1) {
 		update_id = edit_id;
-        setWindowTitle("Edit component");
+		setWindowTitle("Edit component");
 	} else if (clone_id != -1)
-        setWindowTitle("Clone component");
+		setWindowTitle("Clone component");
 	else
-        setWindowTitle("Add component");
+		setWindowTitle("Add component");
 
 	if (clone_id != -1 || edit_id != -1) {
 		QSqlQuery query;
@@ -37,7 +37,7 @@ DialogComponent::DialogComponent(int edit_id, int clone_id, QWidget *parent) :
 			QMessageBox::critical(this, "compdb", "Can't read component data: " + query.lastError().text());
 		else {
 			ui->cb_category->setCurrentIndex(ui->cb_category->findData(query.value(0).toInt()));
-            ui->le_part_no->setText(query.value(1).toString());
+			ui->le_part_no->setText(query.value(1).toString());
 			ui->cb_footprint->setCurrentIndex(ui->cb_footprint->findData(query.value(2).toInt()));
 			ui->le_value->setText(query.value(3).toString());
 			ui->le_voltage->setText(query.value(4).toString());
@@ -58,7 +58,7 @@ DialogComponent::DialogComponent(int edit_id, int clone_id, QWidget *parent) :
 
 DialogComponent::~DialogComponent()
 {
-    delete ui;
+	delete ui;
 }
 
 void DialogComponent::setup_combos()
@@ -124,20 +124,20 @@ void DialogComponent::accept()
 			"  :suppl, :suppl_part_no, :price, :price_vol, :design_item_id, :description)");
 	}
 
-    query.bindValue(":category", ui->cb_category->currentData().toInt());
-    query.bindValue(":part_no", ui->le_part_no->text());
-    query.bindValue(":footprint", ui->cb_footprint->currentData().toInt());
-    query.bindValue(":value", ui->le_value->text());
-    query.bindValue(":voltage", ui->le_voltage->text());
-    query.bindValue(":tolerance", ui->sp_tolerance->value());
-    query.bindValue(":temp", ui->cb_temp->currentData().toInt());
-    query.bindValue(":count", ui->sp_count->value());
-    query.bindValue(":suppl", ui->le_supplier->text());
-    query.bindValue(":suppl_part_no", ui->le_supplier_part_no->text());
-    query.bindValue(":price", ui->sp_price->value());
-    query.bindValue(":price_vol", ui->sp_volume->value());
-    query.bindValue(":design_item_id", ui->le_design_item_id->text());
-    query.bindValue(":description", ui->le_descrtion->text());
+	query.bindValue(":category", ui->cb_category->currentData().toInt());
+	query.bindValue(":part_no", ui->le_part_no->text());
+	query.bindValue(":footprint", ui->cb_footprint->currentData().toInt());
+	query.bindValue(":value", ui->le_value->text());
+	query.bindValue(":voltage", ui->le_voltage->text());
+	query.bindValue(":tolerance", ui->sp_tolerance->value());
+	query.bindValue(":temp", ui->cb_temp->currentData().toInt());
+	query.bindValue(":count", ui->sp_count->value());
+	query.bindValue(":suppl", ui->le_supplier->text());
+	query.bindValue(":suppl_part_no", ui->le_supplier_part_no->text());
+	query.bindValue(":price", ui->sp_price->value());
+	query.bindValue(":price_vol", ui->sp_volume->value());
+	query.bindValue(":design_item_id", ui->le_design_item_id->text());
+	query.bindValue(":description", ui->le_descrtion->text());
 
 	if (!query.exec())
 		QMessageBox::critical(this, "compdb", "Can't add/update component: " + query.lastError().text());

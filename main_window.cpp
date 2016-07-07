@@ -153,9 +153,9 @@ void MainWindow::on_action_add_triggered()
 
 void MainWindow::on_action_clone_triggered()
 {
-    QModelIndexList selection = ui->tableView->selectionModel()->selectedIndexes();
+	QModelIndexList selection = ui->tableView->selectionModel()->selectedIndexes();
 
-    if (selection.count() > 0) {
+	if (selection.count() > 0) {
 		int id = model->index(selection.at(0).row(), 0).data().toInt();
 
 		DialogComponent dialog(-1, id);
@@ -167,9 +167,9 @@ void MainWindow::on_action_clone_triggered()
 
 void MainWindow::on_action_edit_triggered()
 {
-    QModelIndexList selection = ui->tableView->selectionModel()->selectedIndexes();
+	QModelIndexList selection = ui->tableView->selectionModel()->selectedIndexes();
 
-    if (selection.count() > 0) {
+	if (selection.count() > 0) {
 		int id = model->index(selection.at(0).row(), 0).data().toInt();
 		DialogComponent dialog(id);
 		dialog.setModal(true);
@@ -180,9 +180,9 @@ void MainWindow::on_action_edit_triggered()
 
 void MainWindow::on_action_delete_triggered()
 {
-    QModelIndexList selection = ui->tableView->selectionModel()->selectedIndexes();
+	QModelIndexList selection = ui->tableView->selectionModel()->selectedIndexes();
 
-    if (selection.count() > 0 && QMessageBox::question(this, "compdb", tr("Delete selected component?")) == QMessageBox::Yes) {
+	if (selection.count() > 0 && QMessageBox::question(this, "compdb", tr("Delete selected component?")) == QMessageBox::Yes) {
 		int id = model->index(selection.at(0).row(), 0).data().toInt();
 
 		QSqlQuery query;
@@ -240,7 +240,7 @@ void MainWindow::on_le_value_textChanged(const QString &arg1)
 void MainWindow::update_controls()
 {
 	bool db_open = db.isOpen();
-    bool selected = db_open && ui->tableView->selectionModel()->selectedIndexes().count() > 0;
+	bool selected = db_open && ui->tableView->selectionModel()->selectedIndexes().count() > 0;
 
 	ui->group_components->setEnabled(db_open);
 	ui->group_filter->setEnabled(db_open);
@@ -258,17 +258,17 @@ void MainWindow::update_controls()
 
 void MainWindow::update_view()
 {
-    int selection = ui->tableView->selectionModel()->currentIndex().row();
+	int selection = ui->tableView->selectionModel()->currentIndex().row();
 
-    model->select();
+	model->select();
 
-    if (selection != -1)
-        ui->tableView->selectRow(selection);
+	if (selection != -1)
+		ui->tableView->selectRow(selection);
 }
 
 void MainWindow::open_db(QString fname)
 {
-    QSqlRelationalTableModel *old = model;
+	QSqlRelationalTableModel *old = model;
 
 	if (db.open())
 		db.close();
@@ -281,7 +281,7 @@ void MainWindow::open_db(QString fname)
 
 	QSqlQuery foreign_keys ("PRAGMA foreign_keys = ON");
 
-    model = new QSqlRelationalTableModel(this);
+	model = new QSqlRelationalTableModel(this);
 	model->setTable("component");
 	model->setEditStrategy(QSqlTableModel::OnRowChange);
 	model->setRelation(model->fieldIndex("category"), QSqlRelation("category", "id", "name"));

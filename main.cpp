@@ -10,7 +10,7 @@ QString file;
 class Application : public QApplication
 {
 public:
-	Application(int &argc, char **argv) : QApplication(argc, argv) 
+	Application(int &argc, char **argv) : QApplication(argc, argv)
 	{
 		window = new MainWindow;
 		window->show();
@@ -22,7 +22,7 @@ public:
 	}
 
 	// OSX only: Events can execute BEFORE main is executed.
-	bool event(QEvent *event) 
+	bool event(QEvent *event)
 	{
 		if (event->type() == QEvent::FileOpen) {
 			QFileOpenEvent *file_event = static_cast<QFileOpenEvent *>(event);

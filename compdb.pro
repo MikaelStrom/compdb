@@ -1,10 +1,9 @@
-QT		+= core gui sql
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT			+= core gui widgets sql
 
-ICON	= chip.icns
-RC_FILE = compdb.rc
-TARGET	= compdb
-TEMPLATE = app
+TEMPLATE	= app
+TARGET		= compdb
+ICON		= chip.icns
+RC_FILE		= compdb.rc
 QMAKE_INFO_PLIST = Info.plist
 
 SOURCES += main.cpp\
