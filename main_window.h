@@ -18,6 +18,7 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+	void open_db(QString fname);
 
 public slots:
 	void selection_changed(const QItemSelection &, const QItemSelection &);
@@ -45,7 +46,7 @@ private:
 
 	void update_controls();
 	void update_view();
-	void open_db(QString fname);
+//	void open_db(QString fname);
 	void create_db(QString fname);
 	void setup_category();
 	void setup_footprint();
