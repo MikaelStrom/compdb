@@ -65,9 +65,9 @@ void DialogComponent::setup_combos()
 {
 	QSqlQuery query;
 
-	int category_index = ui->cb_category->currentIndex();;
-	int footprint_index = ui->cb_footprint->currentIndex();;
-	int temp_index = ui->cb_temp->currentIndex();;
+	int category_index = ui->cb_category->currentIndex();
+	int footprint_index = ui->cb_footprint->currentIndex();
+	int temp_index = ui->cb_temp->currentIndex();
 
 	ui->cb_category->clear();
 	ui->cb_footprint->clear();

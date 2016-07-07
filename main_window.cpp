@@ -229,12 +229,32 @@ void MainWindow::on_action_temp_triggered()
 
 void MainWindow::on_group_filter_toggled(bool)
 {
-	update_controls();
+	update_view();
 }
 
-void MainWindow::on_le_value_textChanged(const QString &arg1)
+void MainWindow::on_cb_category_currentIndexChanged(int)
 {
-	qDebug() << arg1;
+	update_view();
+}
+
+void MainWindow::on_cb_footprint_currentIndexChanged(int)
+{
+	update_view();
+}
+
+void MainWindow::on_le_part_no_textChanged(const QString &)
+{
+	update_view();
+}
+
+void MainWindow::on_le_value_textChanged(const QString &)
+{
+	update_view();
+}
+
+void MainWindow::on_le_description_textChanged(const QString &)
+{
+	update_view();
 }
 
 void MainWindow::update_controls()
@@ -253,17 +273,51 @@ void MainWindow::update_controls()
 	ui->action_type->setEnabled(db_open);
 	ui->action_footprint->setEnabled(db_open);
 	ui->action_temp->setEnabled(db_open);
-	ui->status->showMessage(db_open ? db.databaseName() : "No database open");
+	setWindowTitle(db_open ? "compdb (" + db.databaseName() + ")" : "compdb (No database open)");
 }
 
 void MainWindow::update_view()
 {
 	int selection = ui->tableView->selectionModel()->currentIndex().row();
+	int category = ui->cb_category->currentData().toInt();
+	int footprint = ui->cb_footprint->currentData().toInt();
+	QString part_no = ui->le_part_no->text();
+	QString value = ui->le_value->text();
+	QString descr = ui->le_description->text();
+	QString filter;
 
-	model->select();
+	if (ui->group_filter->isChecked()) {
+		if (category != -1)
+			filter = "category = " + QString::number(category);
+		if (footprint != -1) {
+			if (!filter.isEmpty())
+				filter += " AND ";
+			filter += "footprint = " + QString::number(footprint);
+		}
+		if (part_no.length() > 0) {
+			if (!filter.isEmpty())
+				filter += " AND ";
+			filter += "part_no LIKE '%" + part_no + "%'";
+		}
+		if (value.length() > 0) {
+			if (!filter.isEmpty())
+				filter += " AND ";
+			filter += "value LIKE '%" + value + "%'";
+		}
+		if (descr.length() > 0) {
+			if (!filter.isEmpty())
+				filter += " AND ";
+			filter += "component.description LIKE '%" + descr + "%'";
+		}
+	}
+	model->setFilter(filter);
+	if (!model->select())
+		QMessageBox::critical(this, "compdb", "Can't set filter (" + filter + "): " + model->lastError().text());
 
 	if (selection != -1)
 		ui->tableView->selectRow(selection);
+
+	update_controls();
 }
 
 void MainWindow::open_db(QString fname)
@@ -279,7 +333,7 @@ void MainWindow::open_db(QString fname)
 		return;
 	}
 
-	QSqlQuery foreign_keys ("PRAGMA foreign_keys = ON");
+	QSqlQuery foreign_keys("PRAGMA foreign_keys = ON");
 
 	model = new QSqlRelationalTableModel(this);
 	model->setTable("component");
@@ -392,3 +446,4 @@ void MainWindow::setup_footprint()
 	if (cur_index != -1)
 		ui->cb_footprint->setCurrentIndex(cur_index);
 }
+

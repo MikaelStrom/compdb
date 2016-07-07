@@ -1,3 +1,2 @@
 * Enforce integer, float etc for component table edit. Reimplement QSqlRelationalDelegate.
 * Remeber last database and open on start
-* Add Icon

@@ -109,7 +109,7 @@
           <bool>true</bool>
          </property>
          <property name="checked">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_3">
           <property name="sizeConstraint">
@@ -136,6 +136,18 @@
           </item>
           <item>
            <widget class="QComboBox" name="cb_category">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>200</width>
+              <height>16777215</height>
+             </size>
+            </property>
             <property name="focusPolicy">
              <enum>Qt::StrongFocus</enum>
             </property>
@@ -151,9 +163,12 @@
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Minimum</enum>
+            </property>
             <property name="sizeHint" stdset="0">
              <size>
-              <width>40</width>
+              <width>10</width>
               <height>20</height>
              </size>
             </property>
@@ -168,6 +183,18 @@
           </item>
           <item>
            <widget class="QComboBox" name="cb_footprint">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>200</width>
+              <height>16777215</height>
+             </size>
+            </property>
             <property name="focusPolicy">
              <enum>Qt::StrongFocus</enum>
             </property>
@@ -183,9 +210,12 @@
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Minimum</enum>
+            </property>
             <property name="sizeHint" stdset="0">
              <size>
-              <width>40</width>
+              <width>10</width>
               <height>20</height>
              </size>
             </property>
@@ -199,16 +229,38 @@
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="le_part_no"/>
+           <widget class="QLineEdit" name="le_part_no">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>50</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>200</width>
+              <height>16777215</height>
+             </size>
+            </property>
+           </widget>
           </item>
           <item>
            <spacer name="horizontalSpacer_6">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Minimum</enum>
+            </property>
             <property name="sizeHint" stdset="0">
              <size>
-              <width>40</width>
+              <width>10</width>
               <height>20</height>
              </size>
             </property>
@@ -222,11 +274,89 @@
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="le_value"/>
+           <widget class="QLineEdit" name="le_value">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>50</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>200</width>
+              <height>16777215</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_7">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Minimum</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>10</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_6">
+            <property name="text">
+             <string>Descr.</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="le_description">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>50</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>200</width>
+              <height>16777215</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::MinimumExpanding</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>10</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
           </item>
          </layout>
-         <zorder>le_value</zorder>
-         <zorder>label_4</zorder>
          <zorder>label_3</zorder>
          <zorder>cb_footprint</zorder>
          <zorder>cb_category</zorder>
@@ -236,6 +366,12 @@
          <zorder>horizontalSpacer_6</zorder>
          <zorder>label_5</zorder>
          <zorder>le_part_no</zorder>
+         <zorder>le_value</zorder>
+         <zorder>label_4</zorder>
+         <zorder>horizontalSpacer</zorder>
+         <zorder>label_6</zorder>
+         <zorder>horizontalSpacer_7</zorder>
+         <zorder>le_description</zorder>
         </widget>
        </item>
       </layout>
@@ -303,13 +439,6 @@
    <addaction name="action_clone"/>
    <addaction name="action_edit"/>
    <addaction name="action_delete"/>
-  </widget>
-  <widget class="QStatusBar" name="status">
-   <property name="font">
-    <font>
-     <pointsize>10</pointsize>
-    </font>
-   </property>
   </widget>
   <action name="action_open">
    <property name="text">

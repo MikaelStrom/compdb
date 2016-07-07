@@ -37,7 +37,11 @@ private slots:
 	void on_action_footprint_triggered();
 	void on_action_temp_triggered();
 	void on_group_filter_toggled(bool arg1);
+    void on_cb_category_currentIndexChanged(int index);
+    void on_cb_footprint_currentIndexChanged(int index);
+    void on_le_part_no_textChanged(const QString &arg1);
 	void on_le_value_textChanged(const QString &arg1);
+    void on_le_description_textChanged(const QString &arg1);
 
 private:
 	Ui::MainWindow *ui;
