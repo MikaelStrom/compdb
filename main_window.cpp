@@ -1,3 +1,22 @@
+/*	This file is part of compdb.
+
+	compdb - Cross plattform Electronic Component Database
+	Copyright (C) 2016  Mikael Ström
+	
+	compdb is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+	
+	compdb is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+	
+	You should have received a copy of the GNU General Public License
+	along with compdb.  If not, see <http://www.gnu.org/licenses/>. 
+*/
+
 #include <QFile>
 #include <QFileDialog>
 #include <QMessageBox>
@@ -57,7 +76,9 @@ const char *sql_create[] = {
 
 	"INSERT INTO `category` (name) VALUES ('Resistor');",
 	"INSERT INTO `category` (name) VALUES ('Capacitor');",
-	"INSERT INTO `category` (name) VALUES ('Transistor');",
+	"INSERT INTO `category` (name) VALUES ('Diode');",
+	"INSERT INTO `category` (name) VALUES ('BJT');",
+	"INSERT INTO `category` (name) VALUES ('JFET');",
 	"INSERT INTO `category` (name) VALUES ('Voltage regulator');",
 
 	"INSERT INTO `mounting` (name) VALUES ('N/A');",
