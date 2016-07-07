@@ -46,7 +46,6 @@ private:
 
 	void update_controls();
 	void update_view();
-//	void open_db(QString fname);
 	void create_db(QString fname);
 	void setup_category();
 	void setup_footprint();

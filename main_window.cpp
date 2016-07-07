@@ -92,8 +92,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	db = QSqlDatabase::addDatabase("QSQLITE");
 
 	update_controls();
-
-//	open_db("/Users/mike/c/compdb/components.compdb");
 }
 
 MainWindow::~MainWindow()
@@ -252,6 +250,7 @@ void MainWindow::update_controls()
 	ui->action_type->setEnabled(db_open);
 	ui->action_footprint->setEnabled(db_open);
 	ui->action_temp->setEnabled(db_open);
+	ui->status->showMessage(db_open ? db.databaseName() : "No database open");
 }
 
 void MainWindow::update_view()
@@ -306,8 +305,9 @@ void MainWindow::open_db(QString fname)
 	ui->tableView->hideColumn(0);
 
 	if (!model->select()) {
-		QMessageBox::critical(this, "compdb", "Can't open " + fname + ": " + model->lastError().text());
+		QMessageBox::critical(this, "compdb", "Can't open/select " + fname + ": " + model->lastError().text());
 		db.close();
+		update_controls();
 		return;
 	}
 
@@ -389,5 +389,3 @@ void MainWindow::setup_footprint()
 	if (cur_index != -1)
 		ui->cb_footprint->setCurrentIndex(cur_index);
 }
-
-

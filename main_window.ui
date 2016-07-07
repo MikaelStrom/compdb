@@ -304,6 +304,13 @@
    <addaction name="action_edit"/>
    <addaction name="action_delete"/>
   </widget>
+  <widget class="QStatusBar" name="status">
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+  </widget>
   <action name="action_open">
    <property name="text">
     <string>Open database...</string>
