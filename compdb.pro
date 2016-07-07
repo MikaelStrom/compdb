@@ -1,5 +1,8 @@
 QT		+= core gui sql
 
+ICON = chip.icns
+RC_FILE = compdb.rc
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = compdb

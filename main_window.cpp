@@ -266,7 +266,7 @@ void MainWindow::update_view()
 
 void MainWindow::open_db(QString fname)
 {
-    RelTabModel *old = model;
+    QSqlRelationalTableModel *old = model;
 
 	if (db.open())
 		db.close();
@@ -279,7 +279,7 @@ void MainWindow::open_db(QString fname)
 
 	QSqlQuery foreign_keys ("PRAGMA foreign_keys = ON");
 
-    model = new RelTabModel(this);
+    model = new QSqlRelationalTableModel(this);
 	model->setTable("component");
 	model->setEditStrategy(QSqlTableModel::OnRowChange);
 	model->setRelation(model->fieldIndex("category"), QSqlRelation("category", "id", "name"));

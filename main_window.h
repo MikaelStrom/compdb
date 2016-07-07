@@ -7,24 +7,6 @@
 #include <QtSql>
 #include <QSqlError>
 
-
-class RelTabModel : public QSqlRelationalTableModel
-{
-public:
-    explicit RelTabModel(QObject *parent = 0, QSqlDatabase db = QSqlDatabase())
-		: QSqlRelationalTableModel(parent, db) {};
-
-//    virtual Qt::ItemFlags flags(const QModelIndex& index) const // override
-//    {
-//       Qt::ItemFlags result = QSqlRelationalTableModel::flags(index);
-//       if (index.column() != 6)
-//           result &= ~Qt::ItemIsEditable;
-//       return result;
-//    }
-};
-
-// ***
-
 namespace Ui {
 class MainWindow;
 }
@@ -59,7 +41,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
 	QSqlDatabase db;
-    RelTabModel *model;
+    QSqlRelationalTableModel *model;
 
 	void update_controls();
 	void update_view();
