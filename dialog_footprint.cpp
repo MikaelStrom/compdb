@@ -2,19 +2,19 @@
 
 	compdb - Cross plattform Electronic Component Database
 	Copyright (C) 2016  Mikael Ström
-	
+
 	compdb is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
 	the Free Software Foundation, either version 3 of the License, or
 	(at your option) any later version.
-	
+
 	compdb is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 	GNU General Public License for more details.
-	
+
 	You should have received a copy of the GNU General Public License
-	along with compdb.  If not, see <http://www.gnu.org/licenses/>. 
+	along with compdb.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <QMessageBox>
@@ -30,11 +30,12 @@ DialogFootprint::DialogFootprint(QWidget *parent) :
 
 	model = new QSqlRelationalTableModel(this);
 	model->setTable("footprint");
-	model->setEditStrategy(QSqlTableModel::OnRowChange);
+	model->setEditStrategy(QSqlTableModel::OnFieldChange);
 	model->setRelation(2, QSqlRelation("mounting", "id", "name"));
 	model->setHeaderData(1, Qt::Horizontal, tr("Footprint"));
 	model->setHeaderData(2, Qt::Horizontal, tr("Mounting"));
 	model->setHeaderData(3, Qt::Horizontal, tr("Description"));
+	model->setSort(1, Qt::AscendingOrder);
 	if (!model->select())
 		QMessageBox::critical(this, "compdb", "Can't open table footprint: " + model->lastError().text());
 
@@ -56,10 +57,18 @@ void DialogFootprint::on_pb_new_clicked()
 	if (!query.exec())
 		QMessageBox::critical(this, "compdb", "Can't add footprint: " + query.lastError().text());
 	else {
+		int inserted_id = query.lastInsertId().toInt();
 		model->select();
-		QModelIndex index = model->index(model->rowCount() - 1, 1);
-		ui->tableView->selectRow(model->rowCount() - 1);
-		ui->tableView->edit(index);
+		for (int i = 0; i < model->rowCount(); ++i) {
+			QModelIndex index = model->index(i, 0);
+			if (model->data(index, Qt::DisplayRole).toInt() == inserted_id) {
+				QModelIndex item = model->index(i, 1);
+				ui->tableView->selectRow(i);
+				ui->tableView->scrollTo(item);
+				ui->tableView->edit(item);
+				break;
+			}
+		}
 	}
 }
 
@@ -82,6 +91,7 @@ void DialogFootprint::on_pb_delete_clicked()
 
 void DialogFootprint::on_pb_close_clicked()
 {
+	model->submitAll();
 	close();
 }
 

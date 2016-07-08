@@ -66,6 +66,7 @@ private:
 	Ui::MainWindow *ui;
 	QSqlDatabase db;
 	QSqlRelationalTableModel *model;
+	QString doc_dir;
 
 	void update_controls();
 	void update_view();

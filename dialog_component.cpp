@@ -2,19 +2,19 @@
 
 	compdb - Cross plattform Electronic Component Database
 	Copyright (C) 2016  Mikael Ström
-	
+
 	compdb is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
 	the Free Software Foundation, either version 3 of the License, or
 	(at your option) any later version.
-	
+
 	compdb is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 	GNU General Public License for more details.
-	
+
 	You should have received a copy of the GNU General Public License
-	along with compdb.  If not, see <http://www.gnu.org/licenses/>. 
+	along with compdb.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <QtSql>
@@ -92,7 +92,7 @@ void DialogComponent::setup_combos()
 	ui->cb_footprint->clear();
 	ui->cb_temp->clear();
 
-	query.exec("SELECT id, name FROM category");
+	query.exec("SELECT id, name FROM category ORDER BY name ASC");
 	while (query.next()) {
 		int id = query.value(0).toInt();
 		QString name = query.value(1).toString();
@@ -100,14 +100,14 @@ void DialogComponent::setup_combos()
 	}
 
 	query.exec("SELECT footprint.id, footprint.name, mounting.name FROM footprint, mounting "
-			   "WHERE footprint.mounting = mounting.id");
+			   "WHERE footprint.mounting = mounting.id ORDER BY footprint.name ASC");
 	while (query.next()) {
 		int id = query.value(0).toInt();
 		QString name = query.value(1).toString() + " (" + query.value(2).toString() + ")";
 		ui->cb_footprint->addItem(name, QVariant(id));
 	}
 
-	query.exec("SELECT id, name, description FROM temp");
+	query.exec("SELECT id, name, description FROM temp ORDER BY name ASC");
 	while (query.next()) {
 		int id = query.value(0).toInt();
 		QString name = query.value(1).toString() + " (" + query.value(2).toString() + ")";
@@ -131,7 +131,7 @@ void DialogComponent::accept()
 			"UPDATE component SET "
 			"  category = :category, part_no = :part_no, footprint = :footprint, value = :value, voltage = :voltage, "
 			"  tolerance = :tolerance, temp = :temp, count = :count, suppl = :suppl, suppl_part_no = :suppl_part_no, "
-			"  price = :price, price_vol = :price_vol, design_item_id = :design_item_id, description = :design_item_id "
+			"  price = :price, price_vol = :price_vol, design_item_id = :design_item_id, description = :description "
 			"WHERE id = :id");
 		query.bindValue(":id", update_id);
 	} else {

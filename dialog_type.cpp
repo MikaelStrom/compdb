@@ -27,11 +27,10 @@ DialogType::DialogType(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-//	connect(view, SIGNAL(clicked(const QModelIndex&)), this, SLOT(recordSelected()));
-
 	model = new QSqlTableModel(this);
 	model->setTable("mounting");
-	model->setEditStrategy(QSqlTableModel::OnRowChange);
+	model->setEditStrategy(QSqlTableModel::OnFieldChange);
+	model->setSort(1, Qt::AscendingOrder);
 	ui->tableView->setModel(model);
 	ui->tableView->hideColumn(0);
 
@@ -48,12 +47,23 @@ void DialogType::on_pb_new_clicked()
 {
 	QSqlQuery query;
 	query.prepare("INSERT INTO mounting (name) VALUES ('<Mount>')");
-	query.exec();
-	model->select();
+	if (!query.exec())
+		QMessageBox::critical(this, "compdb", "Can't add mount: " + query.lastError().text());
+	else {
+		int inserted_id = query.lastInsertId().toInt();
 
-	QModelIndex index = model->index(model->rowCount() - 1, 1);
-	ui->tableView->scrollToBottom();
-	ui->tableView->edit(index);
+		model->select();
+		for (int i = 0; i < model->rowCount(); ++i) {
+			QModelIndex index = model->index(i, 0);
+			if (model->data(index, Qt::DisplayRole).toInt() == inserted_id) {
+				QModelIndex item = model->index(i, 1);
+				ui->tableView->selectRow(i);
+				ui->tableView->scrollTo(item);
+				ui->tableView->edit(item);
+				break;
+			}
+		}
+	}
 }
 
 void DialogType::on_pb_delete_clicked()
@@ -75,5 +85,6 @@ void DialogType::on_pb_delete_clicked()
 
 void DialogType::on_pb_close_clicked()
 {
+	model->submitAll();
 	close();
 }

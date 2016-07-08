@@ -29,6 +29,8 @@ DialogTemp::DialogTemp(QWidget *parent) :
 
 	model = new QSqlTableModel(this);
 	model->setTable("temp");
+	model->setSort(1, Qt::AscendingOrder);
+	model->setEditStrategy(QSqlTableModel::OnFieldChange);
 	model->setHeaderData(1, Qt::Horizontal, tr("Temp Rating"));
 	model->setHeaderData(2, Qt::Horizontal, tr("Description"));
 	if (!model->select())
@@ -51,10 +53,19 @@ void DialogTemp::on_pb_new_clicked()
 	if (!query.exec())
 		QMessageBox::critical(this, "compdb", "Can't add temp: " + query.lastError().text());
 	else {
+		int inserted_id = query.lastInsertId().toInt();
+
 		model->select();
-		QModelIndex index = model->index(model->rowCount() - 1, 1);
-		ui->tableView->selectRow(model->rowCount() - 1);
-		ui->tableView->edit(index);
+		for (int i = 0; i < model->rowCount(); ++i) {
+			QModelIndex index = model->index(i, 0);
+			if (model->data(index, Qt::DisplayRole).toInt() == inserted_id) {
+				QModelIndex item = model->index(i, 1);
+				ui->tableView->selectRow(i);
+				ui->tableView->scrollTo(item);
+				ui->tableView->edit(item);
+				break;
+			}
+		}
 	}
 }
 

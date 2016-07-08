@@ -19,6 +19,8 @@
 
 #include <QFile>
 #include <QFileDialog>
+#include <QStandardPaths>
+#include <QDir>
 #include <QMessageBox>
 #include "main_window.h"
 #include "ui_main_window.h"
@@ -110,8 +112,13 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->setupUi(this);
 	setCentralWidget(ui->centralWidget);
 
-	db = QSqlDatabase::addDatabase("QSQLITE");
+	QStringList paths = QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation);
+	if (paths.size() > 0)
+		doc_dir = paths.at(0);
+	else
+		doc_dir = QDir::homePath();
 
+	db = QSqlDatabase::addDatabase("QSQLITE");
 	update_controls();
 }
 
@@ -128,7 +135,7 @@ void MainWindow::selection_changed(const QItemSelection &, const QItemSelection 
 
 void MainWindow::on_action_open_triggered()
 {
-	QString fileName = QFileDialog::getOpenFileName(this, tr("Open component database"), "", tr("Database files (*.compdb)"));
+	QString fileName = QFileDialog::getOpenFileName(this, tr("Open component database"), doc_dir, tr("Database files (*.compdb)"));
 
 	if (fileName.size() > 0)
 		open_db(fileName);
@@ -136,7 +143,7 @@ void MainWindow::on_action_open_triggered()
 
 void MainWindow::on_action_new_triggered()
 {
-	QString fileName = QFileDialog::getSaveFileName(this, tr("New component database"), "", tr("Database files (*.compdb)"));
+	QString fileName = QFileDialog::getSaveFileName(this, tr("New component database"), doc_dir, tr("Database files (*.compdb)"));
 
 	if (fileName.size() > 0) {
 		if (! fileName.endsWith(".compdb"))
@@ -169,6 +176,8 @@ void MainWindow::on_action_add_triggered()
 	DialogComponent dialog;
 	dialog.setModal(true);
 	dialog.exec();
+	setup_category();
+	setup_footprint();
 	update_view();
 }
 
@@ -182,6 +191,8 @@ void MainWindow::on_action_clone_triggered()
 		DialogComponent dialog(-1, id);
 		dialog.setModal(true);
 		dialog.exec();
+		setup_category();
+		setup_footprint();
 		update_view();
 	}
 }
@@ -195,6 +206,8 @@ void MainWindow::on_action_edit_triggered()
 		DialogComponent dialog(id);
 		dialog.setModal(true);
 		dialog.exec();
+		setup_category();
+		setup_footprint();
 		update_view();
 	}
 }
@@ -212,6 +225,8 @@ void MainWindow::on_action_delete_triggered()
 
 		if (!query.exec())
 			QMessageBox::critical(this, "compdb", "Can't delete component: " + query.lastError().text());
+		setup_category();
+		setup_footprint();
 		update_view();
 	}
 }
@@ -221,6 +236,7 @@ void MainWindow::on_action_category_triggered()
 	DialogCategory dialog;
 	dialog.setModal(true);
 	dialog.exec();
+	setup_category();
 	update_view();
 }
 
@@ -237,6 +253,7 @@ void MainWindow::on_action_footprint_triggered()
 	DialogFootprint dialog;
 	dialog.setModal(true);
 	dialog.exec();
+	setup_footprint();
 	update_view();
 }
 
@@ -358,7 +375,7 @@ void MainWindow::open_db(QString fname)
 
 	model = new QSqlRelationalTableModel(this);
 	model->setTable("component");
-	model->setEditStrategy(QSqlTableModel::OnRowChange);
+	model->setEditStrategy(QSqlTableModel::OnFieldChange);
 	model->setRelation(model->fieldIndex("category"), QSqlRelation("category", "id", "name"));
 	model->setRelation(model->fieldIndex("footprint"), QSqlRelation("footprint", "id", "name"));
 	model->setRelation(model->fieldIndex("temp"), QSqlRelation("temp", "id", "name"));
@@ -436,7 +453,7 @@ void MainWindow::setup_category()
 	ui->cb_category->addItem("<All>", QVariant(-1));
 
 	QSqlQuery query;
-	query.exec("SELECT id, name FROM category");
+	query.exec("SELECT id, name FROM category ORDER BY name ASC");
 	while (query.next()) {
 		int id = query.value(0).toInt();
 		QString name = query.value(1).toString();
@@ -457,7 +474,7 @@ void MainWindow::setup_footprint()
 	ui->cb_footprint->addItem("<All>", QVariant(-1));
 
 	QSqlQuery query;
-	query.exec("SELECT id, name FROM footprint");
+	query.exec("SELECT id, name FROM footprint ORDER BY name ASC");
 	while (query.next()) {
 		int id = query.value(0).toInt();
 		QString name = query.value(1).toString();
