@@ -8,6 +8,7 @@ QMAKE_INFO_PLIST = Info.plist
 
 SOURCES += main.cpp\
         main_window.cpp \
+        rel_delegate.cpp \
 		dialog_category.cpp \
 		dialog_type.cpp \
 		dialog_footprint.cpp \
@@ -15,6 +16,7 @@ SOURCES += main.cpp\
 		dialog_component.cpp
 
 HEADERS	+= main_window.h \
+        rel_delegate.h \
 		dialog_category.h \
 		dialog_type.h \
 		dialog_footprint.h \

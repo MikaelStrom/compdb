@@ -25,6 +25,7 @@
 #include "dialog_category.h"
 #include "dialog_footprint.h"
 #include "dialog_temp.h"
+#include "db_defs.h"
 
 DialogComponent::DialogComponent(int edit_id, int clone_id, QWidget *parent) :
 	QDialog(parent),
@@ -34,6 +35,23 @@ DialogComponent::DialogComponent(int edit_id, int clone_id, QWidget *parent) :
 	ui->setupUi(this);
 
 	Q_ASSERT(!(edit_id != -1 && clone_id != -1));
+
+#ifdef __APPLE__
+	const int marg_left = 6;
+	ui->le_part_no->setTextMargins(marg_left, 0, 0, 0);
+	ui->le_value->setTextMargins(marg_left, 0, 0, 0);
+	ui->le_voltage->setTextMargins(marg_left, 0, 0, 0);
+	ui->le_amp->setTextMargins(marg_left, 0, 0, 0);
+	ui->le_power->setTextMargins(marg_left, 0, 0, 0);
+	ui->le_tolerance->setTextMargins(marg_left, 0, 0, 0);
+	ui->le_supplier->setTextMargins(marg_left, 0, 0, 0);
+	ui->le_supplier_part_no->setTextMargins(marg_left, 0, 0, 0);
+	ui->le_design_item_id->setTextMargins(marg_left, 0, 0, 0);
+	ui->le_description->setTextMargins(marg_left, 0, 0, 0);
+	ui->sp_count->setContentsMargins(marg_left, 0, 0, 0);
+	ui->sp_price->setContentsMargins(marg_left, 0, 0, 0);
+	ui->sp_volume->setContentsMargins(marg_left, 0, 0, 0);
+#endif
 
 	setup_combos();
 
@@ -47,28 +65,28 @@ DialogComponent::DialogComponent(int edit_id, int clone_id, QWidget *parent) :
 
 	if (clone_id != -1 || edit_id != -1) {
 		QSqlQuery query;
-		query.prepare("SELECT category, part_no, footprint, value, voltage, tolerance, temp, count, "
-					  "  suppl, suppl_part_no, price, price_vol, design_item_id, description "
-					  "FROM component WHERE id = :id");
+		query.prepare("SELECT * FROM component WHERE id = :id");
 		query.bindValue(":id", clone_id != -1 ? clone_id : edit_id);
 
 		if (!query.exec() || !query.next())
 			QMessageBox::critical(this, "compdb", "Can't read component data: " + query.lastError().text());
 		else {
-			ui->cb_category->setCurrentIndex(ui->cb_category->findData(query.value(0).toInt()));
-			ui->le_part_no->setText(query.value(1).toString());
-			ui->cb_footprint->setCurrentIndex(ui->cb_footprint->findData(query.value(2).toInt()));
-			ui->le_value->setText(query.value(3).toString());
-			ui->le_voltage->setText(query.value(4).toString());
-			ui->sp_tolerance->setValue(query.value(5).toInt());
-			ui->cb_temp->setCurrentIndex(ui->cb_temp->findData(query.value(6).toInt()));
-			ui->sp_count->setValue(query.value(7).toInt());
-			ui->le_supplier->setText(query.value(8).toString());
-			ui->le_supplier_part_no->setText(query.value(9).toString());
-			ui->sp_price->setValue(query.value(10).toFloat());
-			ui->sp_volume->setValue(query.value(11).toInt());
-			ui->le_design_item_id->setText(query.value(12).toString());
-			ui->le_descrtion->setText(query.value(13).toString());
+			ui->cb_category->setCurrentIndex(ui->cb_category->findData(query.value(COLUMN_CATEGORY).toInt()));
+			ui->le_part_no->setText(query.value(COLUMN_PART_NO).toString());
+			ui->cb_footprint->setCurrentIndex(ui->cb_footprint->findData(query.value(COLUMN_FOOTPRINT).toInt()));
+			ui->le_value->setText(query.value(COLUMN_VALUE).toString());
+			ui->le_voltage->setText(query.value(COLUMN_VOLTAGE).toString());
+			ui->le_amp->setText(query.value(COLUMN_AMP).toString());
+			ui->le_power->setText(query.value(COLUMN_POWER).toString());
+			ui->le_tolerance->setText(query.value(COLUMN_TOLERANCE).toString());
+			ui->cb_temp->setCurrentIndex(ui->cb_temp->findData(query.value(COLUMN_TEMP).toInt()));
+			ui->sp_count->setValue(query.value(COLUMN_COUNT).toInt());
+			ui->le_supplier->setText(query.value(COLUMN_SUPPL).toString());
+			ui->le_supplier_part_no->setText(query.value(COLUMN_SUPPL_PART_NO).toString());
+			ui->sp_price->setValue(query.value(COLUMN_PRICE).toFloat());
+			ui->sp_volume->setValue(query.value(COLUMN_PRICE_VOL).toInt());
+			ui->le_design_item_id->setText(query.value(COLUMN_DESIGN_ITEM_ID).toString());
+			ui->le_description->setText(query.value(COLUMN_DESCRIPTION).toString());
 		}
 	}
 
@@ -129,17 +147,18 @@ void DialogComponent::accept()
 	if (update_id != -1) {
 		query.prepare(
 			"UPDATE component SET "
-			"  category = :category, part_no = :part_no, footprint = :footprint, value = :value, voltage = :voltage, "
-			"  tolerance = :tolerance, temp = :temp, count = :count, suppl = :suppl, suppl_part_no = :suppl_part_no, "
+			"  category = :category, part_no = :part_no, footprint = :footprint, "
+			"  value = :value, voltage = :voltage, amp = :amp, power = :power, tolerance = :tolerance, "
+			"  temp = :temp, count = :count, suppl = :suppl, suppl_part_no = :suppl_part_no, "
 			"  price = :price, price_vol = :price_vol, design_item_id = :design_item_id, description = :description "
 			"WHERE id = :id");
 		query.bindValue(":id", update_id);
 	} else {
 		query.prepare(
 			"INSERT INTO component "
-			"  (category, part_no, footprint, value, voltage, tolerance, temp, count, "
+			"  (category, part_no, footprint, value, voltage, amp, power, tolerance, temp, count, "
 			"  suppl, suppl_part_no, price, price_vol, design_item_id, description) "
-			"VALUES (:category, :part_no, :footprint, :value, :voltage, :tolerance, :temp, :count, "
+			"VALUES (:category, :part_no, :footprint, :value, :voltage, :amp, :power, :tolerance, :temp, :count, "
 			"  :suppl, :suppl_part_no, :price, :price_vol, :design_item_id, :description)");
 	}
 
@@ -148,7 +167,9 @@ void DialogComponent::accept()
 	query.bindValue(":footprint", ui->cb_footprint->currentData().toInt());
 	query.bindValue(":value", ui->le_value->text());
 	query.bindValue(":voltage", ui->le_voltage->text());
-	query.bindValue(":tolerance", ui->sp_tolerance->value());
+	query.bindValue(":amp", ui->le_amp->text());
+	query.bindValue(":power", ui->le_power->text());
+	query.bindValue(":tolerance", ui->le_tolerance->text());
 	query.bindValue(":temp", ui->cb_temp->currentData().toInt());
 	query.bindValue(":count", ui->sp_count->value());
 	query.bindValue(":suppl", ui->le_supplier->text());
@@ -156,7 +177,7 @@ void DialogComponent::accept()
 	query.bindValue(":price", ui->sp_price->value());
 	query.bindValue(":price_vol", ui->sp_volume->value());
 	query.bindValue(":design_item_id", ui->le_design_item_id->text());
-	query.bindValue(":description", ui->le_descrtion->text());
+	query.bindValue(":description", ui->le_description->text());
 
 	if (!query.exec())
 		QMessageBox::critical(this, "compdb", "Can't add/update component: " + query.lastError().text());

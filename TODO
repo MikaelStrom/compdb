@@ -1,4 +1,3 @@
 * Use category.id and footprint.id to restore current selection in search combos.
-* Find out why QSqlRelationalTableModel fails to update referenced tables on select().
-* Enforce integer, float etc for component table edit. Reimplement QSqlRelationalDelegate.
 * Remeber last database and open on start.
+* Number of decimals in table view, Price

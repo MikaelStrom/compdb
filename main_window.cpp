@@ -1,20 +1,20 @@
 /*	This file is part of compdb.
 
 	compdb - Cross plattform Electronic Component Database
-	Copyright (C) 2016  Mikael Ström
-	
+	Copyright (C) 2016	Mikael Ström
+
 	compdb is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
 	the Free Software Foundation, either version 3 of the License, or
 	(at your option) any later version.
-	
+
 	compdb is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 	GNU General Public License for more details.
-	
+
 	You should have received a copy of the GNU General Public License
-	along with compdb.  If not, see <http://www.gnu.org/licenses/>. 
+	along with compdb.	If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <QFile>
@@ -22,8 +22,9 @@
 #include <QStandardPaths>
 #include <QDir>
 #include <QMessageBox>
-#include "main_window.h"
+#include <QDesktopServices>
 #include "ui_main_window.h"
+#include "main_window.h"
 #include "dialog_category.h"
 #include "dialog_type.h"
 #include "dialog_footprint.h"
@@ -62,7 +63,9 @@ const char *sql_create[] = {
 	"	`footprint`			INTEGER,"
 	"	`value`				TEXT,"
 	"	`voltage`			TEXT,"
-	"	`tolerance`			INTEGER,"
+	"	`amp`				TEXT,"
+	"	`power`				TEXT,"
+	"	`tolerance`			TEXT,"
 	"	`temp`				INTEGER,"
 	"	`count`				INTEGER,"
 	"	`suppl`				TEXT,"
@@ -82,6 +85,7 @@ const char *sql_create[] = {
 	"INSERT INTO `category` (name) VALUES ('BJT');",
 	"INSERT INTO `category` (name) VALUES ('JFET');",
 	"INSERT INTO `category` (name) VALUES ('Voltage regulator');",
+	"INSERT INTO `category` (name) VALUES ('LDO');",
 
 	"INSERT INTO `mounting` (name) VALUES ('N/A');",
 	"INSERT INTO `mounting` (name) VALUES ('SMT');",
@@ -89,13 +93,13 @@ const char *sql_create[] = {
 	"INSERT INTO `mounting` (name) VALUES ('Chassi');",
 
 	"INSERT INTO `temp` (name, description) VALUES ('N/A', 'N/A');",
-	"INSERT INTO `temp` (name, description) VALUES ('NP0/C0G', 'Zero drift');",
-	"INSERT INTO `temp` (name, description) VALUES ('X8R', '−55/+150, ΔC/C0 = ±15%');",
-	"INSERT INTO `temp` (name, description) VALUES ('X7R', '−55/+125 °C, ΔC/C0 = ±15%');",
-	"INSERT INTO `temp` (name, description) VALUES ('X5R', '−55/+85 °C, ΔC/C0 = ±15%');",
-	"INSERT INTO `temp` (name, description) VALUES ('X7S', '−55/+125, ΔC/C0 = ±22%');",
-	"INSERT INTO `temp` (name, description) VALUES ('Y5V', '−30/+85 °C, ΔC/C0 = +22/−82%');",
-	"INSERT INTO `temp` (name, description) VALUES ('Z5U', '+10/+85 °C, ΔC/C0 = +22/−56%');",
+	"INSERT INTO `temp` (name, description) VALUES ('CAP NP0/C0G', 'Zero drift');",
+	"INSERT INTO `temp` (name, description) VALUES ('CAP X8R', '−55/+150, ΔC/C0 = ±15%');",
+	"INSERT INTO `temp` (name, description) VALUES ('CAP X7R', '−55/+125 °C, ΔC/C0 = ±15%');",
+	"INSERT INTO `temp` (name, description) VALUES ('CAP X5R', '−55/+85 °C, ΔC/C0 = ±15%');",
+	"INSERT INTO `temp` (name, description) VALUES ('CAP X7S', '−55/+125, ΔC/C0 = ±22%');",
+	"INSERT INTO `temp` (name, description) VALUES ('CAP Y5V', '−30/+85 °C, ΔC/C0 = +22/−82%');",
+	"INSERT INTO `temp` (name, description) VALUES ('CAP Z5U', '+10/+85 °C, ΔC/C0 = +22/−56%');",
 
 	"INSERT INTO `footprint` (name, mounting, description) VALUES ('None', 1, 'None');",
 	"INSERT INTO `footprint` (name, mounting, description) VALUES ('0402', 2, 'Metric 1005');",
@@ -111,6 +115,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 	ui->setupUi(this);
 	setCentralWidget(ui->centralWidget);
+
+	delegate = new RelationDelegate(this);
 
 	QStringList paths = QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation);
 	if (paths.size() > 0)
@@ -135,26 +141,32 @@ void MainWindow::selection_changed(const QItemSelection &, const QItemSelection 
 
 void MainWindow::on_action_open_triggered()
 {
-	QString fileName = QFileDialog::getOpenFileName(this, tr("Open component database"), doc_dir, tr("Database files (*.compdb)"));
+	QString fname = QFileDialog::getOpenFileName(this, tr("Open component database"), doc_dir, tr("Database files (*.compdb)"));
 
-	if (fileName.size() > 0)
-		open_db(fileName);
+	if (fname.size() > 0)
+		open_db(fname);
 }
 
 void MainWindow::on_action_new_triggered()
 {
-	QString fileName = QFileDialog::getSaveFileName(this, tr("New component database"), doc_dir, tr("Database files (*.compdb)"));
+	QString fname = QFileDialog::getSaveFileName(this, tr("New component database"), doc_dir, tr("Database files (*.compdb)"));
 
-	if (fileName.size() > 0) {
-		if (! fileName.endsWith(".compdb"))
-			fileName.append(".compdb");
+	if (fname.size() > 0) {
+		if (! fname.endsWith(".compdb"))
+			fname.append(".compdb");
 
-		QFile file(fileName);
+		QFile file(fname);
 		if (file.exists() && !file.remove()) {
 			QMessageBox::critical(this, "compdb", "Can't remove " + file.fileName());
 			return;
 		}
-		create_db(fileName);
+		if (create_db(fname)) {
+			setWindowFilePath(fname);
+			setWindowTitle(QApplication::applicationName() + " - " + fname);
+		} else {
+			setWindowFilePath("");
+			setWindowTitle(QApplication::applicationName());
+		}
 	}
 }
 
@@ -164,6 +176,8 @@ void MainWindow::on_action_close_triggered()
 	if (model)
 		model->clear();
 	update_controls();
+	setWindowFilePath("");
+	setWindowTitle(QApplication::applicationName());
 }
 
 void MainWindow::on_action_exit_triggered()
@@ -265,6 +279,36 @@ void MainWindow::on_action_temp_triggered()
 	update_view();
 }
 
+void MainWindow::on_action_google_triggered()
+{
+	QModelIndexList selection = ui->tableView->selectionModel()->selectedIndexes();
+
+	if (selection.count() > 0) {
+		QString part = model->index(selection.at(0).row(), model->fieldIndex("part_no")).data().toString();
+		QString suppl = model->index(selection.at(0).row(), model->fieldIndex("suppl")).data().toString();
+		QDesktopServices::openUrl(QUrl("https://www.google.com/search?q=" + part + "+" + suppl));
+	}
+}
+
+void MainWindow::on_action_help_triggered()
+{
+	QDesktopServices::openUrl(QUrl("https://github.com/MikaelStrom/compdb/wiki"));
+}
+
+void MainWindow::on_action_about_triggered()
+{
+	const char* text =
+		"Cross plattform Electronic Component Database.\n"
+		"Version 0.1\n\n"
+		"Released under GPL3.\n"
+		"Copyright (C) 2016 Mikael Ström.\n\n"
+		"The icon was crated by Double-J Design\n"
+		"  and is licensed under Creative Commons license.\n"
+		"  http://www.doublejdesign.co.uk\n"
+		;
+	QMessageBox::about(this, tr("About compdb"), text);
+}
+
 void MainWindow::on_group_filter_toggled(bool)
 {
 	update_view();
@@ -311,7 +355,10 @@ void MainWindow::update_controls()
 	ui->action_type->setEnabled(db_open);
 	ui->action_footprint->setEnabled(db_open);
 	ui->action_temp->setEnabled(db_open);
-	setWindowTitle(db_open ? "compdb (" + db.databaseName() + ")" : "compdb (No database open)");
+	ui->action_google->setEnabled(selected);
+	ui->lb_db->setText(db_open ? db.databaseName() : "No database open");
+	if (model != NULL)
+		ui->lb_rows->setText(QString::number(model->rowCount()) + " records");
 }
 
 void MainWindow::update_view()
@@ -358,9 +405,15 @@ void MainWindow::update_view()
 	update_controls();
 }
 
-void MainWindow::open_db(QString fname)
+bool MainWindow::open_db(QString fname)
 {
-	QSqlRelationalTableModel *old = model;
+	QSqlTableModel *old = model;
+
+	if (model)
+		model->clear();
+
+	setWindowFilePath("");
+	setWindowTitle(QApplication::applicationName());
 
 	if (db.open())
 		db.close();
@@ -368,25 +421,23 @@ void MainWindow::open_db(QString fname)
 	db.setDatabaseName(fname);
 	if (! db.open()) {
 		QMessageBox::critical(this, "compdb", "Can't open " + fname + ": " + db.lastError().text());
-		return;
+		return false;
 	}
 
 	QSqlQuery foreign_keys("PRAGMA foreign_keys = ON");
 
-	model = new QSqlRelationalTableModel(this);
+	model = new QSqlTableModel(this);
 	model->setTable("component");
 	model->setEditStrategy(QSqlTableModel::OnFieldChange);
-	model->setRelation(model->fieldIndex("category"), QSqlRelation("category", "id", "name"));
-	model->setRelation(model->fieldIndex("footprint"), QSqlRelation("footprint", "id", "name"));
-	model->setRelation(model->fieldIndex("temp"), QSqlRelation("temp", "id", "name"));
-
-	model->setHeaderData(1, Qt::Horizontal, tr("Category"));
-	model->setHeaderData(3, Qt::Horizontal, tr("Footprint"));
-	model->setHeaderData(7, Qt::Horizontal, tr("Temp Coeff"));
+	model->setHeaderData(model->fieldIndex("category"), Qt::Horizontal, tr("Category"));
 	model->setHeaderData(model->fieldIndex("part_no"), Qt::Horizontal, tr("Part No"));
+	model->setHeaderData(model->fieldIndex("footprint"), Qt::Horizontal, tr("Footprint"));
 	model->setHeaderData(model->fieldIndex("value"), Qt::Horizontal, tr("Value"));
-	model->setHeaderData(model->fieldIndex("voltage"), Qt::Horizontal, tr("Voltage rating"));
-	model->setHeaderData(model->fieldIndex("tolerance"), Qt::Horizontal, tr("Tolerance %"));
+	model->setHeaderData(model->fieldIndex("voltage"), Qt::Horizontal, tr("Voltage"));
+	model->setHeaderData(model->fieldIndex("amp"), Qt::Horizontal, tr("Max Current"));
+	model->setHeaderData(model->fieldIndex("power"), Qt::Horizontal, tr("Max Power"));
+	model->setHeaderData(model->fieldIndex("tolerance"), Qt::Horizontal, tr("Tolerance"));
+	model->setHeaderData(model->fieldIndex("temp"), Qt::Horizontal, tr("Temp Rating"));
 	model->setHeaderData(model->fieldIndex("count"), Qt::Horizontal, tr("Count"));
 	model->setHeaderData(model->fieldIndex("suppl"), Qt::Horizontal, tr("Supplier"));
 	model->setHeaderData(model->fieldIndex("suppl_part_no"), Qt::Horizontal, tr("Supplier Part No"));
@@ -395,16 +446,17 @@ void MainWindow::open_db(QString fname)
 	model->setHeaderData(model->fieldIndex("design_item_id"), Qt::Horizontal, tr("Design Item Id"));
 	model->setHeaderData(model->fieldIndex("description"), Qt::Horizontal, tr("Description"));
 
-	ui->tableView->setModel(model);
-	ui->tableView->setItemDelegate(new QSqlRelationalDelegate(ui->tableView));
-	ui->tableView->hideColumn(0);
-
 	if (!model->select()) {
 		QMessageBox::critical(this, "compdb", "Can't open/select " + fname + ": " + model->lastError().text());
 		db.close();
 		update_controls();
-		return;
+		return false;
 	}
+
+	ui->tableView->setModel(model);
+	ui->tableView->setItemDelegate(delegate);
+	ui->tableView->hideColumn(0);
+	ui->tableView->resizeColumnsToContents();
 
 	connect(ui->tableView->selectionModel(),
 			SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)),
@@ -416,9 +468,14 @@ void MainWindow::open_db(QString fname)
 	setup_category();
 	setup_footprint();
 	update_controls();
+
+	setWindowFilePath(fname);
+	setWindowTitle(QApplication::applicationName() + " - " + fname);
+
+	return true;
 }
 
-void MainWindow::create_db(QString fname)
+bool MainWindow::create_db(QString fname)
 {
 	if (db.open())
 		db.close();
@@ -427,20 +484,21 @@ void MainWindow::create_db(QString fname)
 
 	if (! db.open()) {
 		QMessageBox::critical(this, "compdb", "Can't create " + fname + ": " + db.lastError().text());
-		return;
+		return false;
 	}
 
 	for (unsigned i = 0; i < sizeof(sql_create) / sizeof(sql_create[0]); ++ i) {
 		QSqlQuery query;
 		if (!query.exec(sql_create[i])) {
 			QMessageBox::critical(this, "compdb", "Can't execute sql:\n" + QString(sql_create[i]) + ":\n" + query.lastError().text());
-			break;
+			db.close();
+			return false;
 		}
 	}
 
 	db.close();
 
-	open_db(fname);
+	return open_db(fname);
 }
 
 void MainWindow::setup_category()
@@ -484,4 +542,5 @@ void MainWindow::setup_footprint()
 	if (cur_index != -1)
 		ui->cb_footprint->setCurrentIndex(cur_index);
 }
+
 
