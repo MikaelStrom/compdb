@@ -56,6 +56,7 @@ private slots:
 	void on_action_type_triggered();
 	void on_action_footprint_triggered();
 	void on_action_temp_triggered();
+    void on_action_suppl_triggered();
     void on_action_google_triggered();
     void on_action_help_triggered();
     void on_action_about_triggered();

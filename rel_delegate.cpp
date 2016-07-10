@@ -81,6 +81,21 @@ QWidget* RelationDelegate::createEditor(QWidget *parent,
 			e = editor;
 			break;
 		}
+		case COLUMN_SUPPL:
+		{
+			QComboBox *editor = new QComboBox(parent);
+			editor->setFrame(false);
+
+			QSqlQuery query;
+			query.exec("SELECT id, name FROM suppl ORDER BY name ASC");
+			while (query.next()) {
+				int id = query.value(0).toInt();
+				QString name = query.value(1).toString();
+				editor->addItem(name, QVariant(id));
+			}
+			e = editor;
+			break;
+		}
 		case COLUMN_COUNT:
 		case COLUMN_PRICE_VOL:
 		{
@@ -104,6 +119,7 @@ void RelationDelegate::setEditorData(QWidget *editor, const QModelIndex &index) 
 		case COLUMN_CATEGORY:
 		case COLUMN_FOOTPRINT:
 		case COLUMN_TEMP:
+		case COLUMN_SUPPL:
 		{
 			QComboBox *cb = static_cast<QComboBox*>(editor);
 			for (int i = 0 ; i < cb->count(); ++ i)
@@ -134,6 +150,7 @@ void RelationDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
 		case COLUMN_CATEGORY:
 		case COLUMN_FOOTPRINT:
 		case COLUMN_TEMP:
+		case COLUMN_SUPPL:
 		{
 			QComboBox *cb = static_cast<QComboBox*>(editor);
 			if (cb->currentData().isValid()) {
@@ -186,7 +203,8 @@ void RelationDelegate::initStyleOption(QStyleOptionViewItem *option, const QMode
 
 	QVariant value = index.data(Qt::DisplayRole);
 
-	if(index.column() == COLUMN_CATEGORY || index.column() == COLUMN_FOOTPRINT || index.column() == COLUMN_TEMP) {
+	if(index.column() == COLUMN_CATEGORY || index.column() == COLUMN_FOOTPRINT || 
+	   index.column() == COLUMN_TEMP || index.column() == COLUMN_SUPPL) {
 		if (value.isValid() && !value.isNull()) {
 			int id = index.model()->data(index, Qt::EditRole).toInt();
 			QString q;
@@ -194,6 +212,7 @@ void RelationDelegate::initStyleOption(QStyleOptionViewItem *option, const QMode
 				case COLUMN_CATEGORY:	q = "SELECT name FROM category WHERE id = :id"; break;
 				case COLUMN_FOOTPRINT:	q = "SELECT name FROM footprint WHERE id = :id"; break;
 				case COLUMN_TEMP:		q = "SELECT name FROM temp WHERE id = :id";	break;
+				case COLUMN_SUPPL:		q = "SELECT name FROM suppl WHERE id = :id";	break;
 			}
 			QSqlQuery query;
 			query.prepare(q);

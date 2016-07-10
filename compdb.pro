@@ -13,6 +13,7 @@ SOURCES += main.cpp\
 		dialog_type.cpp \
 		dialog_footprint.cpp \
 		dialog_temp.cpp \
+		dialog_suppl.cpp \
 		dialog_component.cpp
 
 HEADERS	+= main_window.h \
@@ -21,6 +22,7 @@ HEADERS	+= main_window.h \
 		dialog_type.h \
 		dialog_footprint.h \
 		dialog_temp.h \
+		dialog_suppl.h \
 		dialog_component.h
 
 FORMS	+= main_window.ui \
@@ -28,4 +30,5 @@ FORMS	+= main_window.ui \
 		dialog_type.ui \
 		dialog_footprint.ui \
 		dialog_temp.ui \
+		dialog_suppl.ui \
 		dialog_component.ui

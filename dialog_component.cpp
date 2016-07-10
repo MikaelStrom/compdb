@@ -25,6 +25,7 @@
 #include "dialog_category.h"
 #include "dialog_footprint.h"
 #include "dialog_temp.h"
+#include "dialog_suppl.h"
 #include "db_defs.h"
 
 DialogComponent::DialogComponent(int edit_id, int clone_id, QWidget *parent) :
@@ -44,7 +45,6 @@ DialogComponent::DialogComponent(int edit_id, int clone_id, QWidget *parent) :
 	ui->le_amp->setTextMargins(marg_left, 0, 0, 0);
 	ui->le_power->setTextMargins(marg_left, 0, 0, 0);
 	ui->le_tolerance->setTextMargins(marg_left, 0, 0, 0);
-	ui->le_supplier->setTextMargins(marg_left, 0, 0, 0);
 	ui->le_supplier_part_no->setTextMargins(marg_left, 0, 0, 0);
 	ui->le_design_item_id->setTextMargins(marg_left, 0, 0, 0);
 	ui->le_description->setTextMargins(marg_left, 0, 0, 0);
@@ -81,7 +81,7 @@ DialogComponent::DialogComponent(int edit_id, int clone_id, QWidget *parent) :
 			ui->le_tolerance->setText(query.value(COLUMN_TOLERANCE).toString());
 			ui->cb_temp->setCurrentIndex(ui->cb_temp->findData(query.value(COLUMN_TEMP).toInt()));
 			ui->sp_count->setValue(query.value(COLUMN_COUNT).toInt());
-			ui->le_supplier->setText(query.value(COLUMN_SUPPL).toString());
+			ui->cb_supplier->setCurrentIndex(ui->cb_supplier->findData(query.value(COLUMN_SUPPL).toInt()));
 			ui->le_supplier_part_no->setText(query.value(COLUMN_SUPPL_PART_NO).toString());
 			ui->sp_price->setValue(query.value(COLUMN_PRICE).toFloat());
 			ui->sp_volume->setValue(query.value(COLUMN_PRICE_VOL).toInt());
@@ -102,13 +102,24 @@ void DialogComponent::setup_combos()
 {
 	QSqlQuery query;
 
-	int category_index = ui->cb_category->currentIndex();
-	int footprint_index = ui->cb_footprint->currentIndex();
-	int temp_index = ui->cb_temp->currentIndex();
+	int category_id = -1;
+	int footprint_id = -1;
+	int temp_id = -1;
+	int suppl_id = -1;
+
+	if (ui->cb_category->currentData().isValid() && !ui->cb_category->currentData().isNull())
+		category_id = ui->cb_category->currentData().toInt();
+	if (ui->cb_footprint->currentData().isValid() && !ui->cb_footprint->currentData().isNull())
+		footprint_id = ui->cb_footprint->currentData().toInt();
+	if (ui->cb_temp->currentData().isValid() && !ui->cb_temp->currentData().isNull())
+		temp_id = ui->cb_temp->currentData().toInt();
+	if (ui->cb_supplier->currentData().isValid() && !ui->cb_supplier->currentData().isNull())
+		suppl_id = ui->cb_supplier->currentData().toInt();
 
 	ui->cb_category->clear();
 	ui->cb_footprint->clear();
 	ui->cb_temp->clear();
+	ui->cb_supplier->clear();
 
 	query.exec("SELECT id, name FROM category ORDER BY name ASC");
 	while (query.next()) {
@@ -132,12 +143,21 @@ void DialogComponent::setup_combos()
 		ui->cb_temp->addItem(name, QVariant(id));
 	}
 
-	if (category_index != -1)
-		ui->cb_category->setCurrentIndex(category_index);
-	if (footprint_index != -1)
-		ui->cb_footprint->setCurrentIndex(footprint_index);
-	if (temp_index != -1)
-		ui->cb_temp->setCurrentIndex(temp_index);
+	query.exec("SELECT id, name FROM suppl ORDER BY name ASC");
+	while (query.next()) {
+		int id = query.value(0).toInt();
+		QString name = query.value(1).toString();
+		ui->cb_supplier->addItem(name, QVariant(id));
+	}
+
+	if (category_id != -1)
+		ui->cb_category->setCurrentIndex(ui->cb_category->findData(category_id));
+	if (footprint_id != -1)
+		ui->cb_footprint->setCurrentIndex(ui->cb_footprint->findData(footprint_id));
+	if (temp_id != -1)
+		ui->cb_temp->setCurrentIndex(ui->cb_temp->findData(temp_id));
+	if (suppl_id != -1)
+		ui->cb_supplier->setCurrentIndex(ui->cb_supplier->findData(suppl_id));
 }
 
 void DialogComponent::accept()
@@ -172,7 +192,7 @@ void DialogComponent::accept()
 	query.bindValue(":tolerance", ui->le_tolerance->text());
 	query.bindValue(":temp", ui->cb_temp->currentData().toInt());
 	query.bindValue(":count", ui->sp_count->value());
-	query.bindValue(":suppl", ui->le_supplier->text());
+	query.bindValue(":suppl", ui->cb_supplier->currentData().toInt());
 	query.bindValue(":suppl_part_no", ui->le_supplier_part_no->text());
 	query.bindValue(":price", ui->sp_price->value());
 	query.bindValue(":price_vol", ui->sp_volume->value());
@@ -204,6 +224,14 @@ void DialogComponent::on_btn_footprint_clicked()
 void DialogComponent::on_btn_temp_clicked()
 {
 	DialogTemp dialog;
+	dialog.setModal(true);
+	dialog.exec();
+	setup_combos();
+}
+
+void DialogComponent::on_btn_suppl_clicked()
+{
+	DialogSuppl dialog;
 	dialog.setModal(true);
 	dialog.exec();
 	setup_combos();

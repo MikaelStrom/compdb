@@ -29,6 +29,7 @@
 #include "dialog_type.h"
 #include "dialog_footprint.h"
 #include "dialog_temp.h"
+#include "dialog_suppl.h"
 #include "dialog_component.h"
 
 const char *sql_create[] = {
@@ -56,6 +57,13 @@ const char *sql_create[] = {
 	"	FOREIGN KEY(`mounting`) REFERENCES `mounting`(`id`)"
 	");",
 
+	"CREATE TABLE \"suppl\" ("
+	"	`id`				INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,"
+	"	`name`				TEXT NOT NULL,"
+	"	`domain`			TEXT,"
+	"	`description`		TEXT"
+	");",
+
 	"CREATE TABLE \"component\" ("
 	"	`id`				INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,"
 	"	`category`			INTEGER NOT NULL,"
@@ -68,7 +76,7 @@ const char *sql_create[] = {
 	"	`tolerance`			TEXT,"
 	"	`temp`				INTEGER,"
 	"	`count`				INTEGER,"
-	"	`suppl`				TEXT,"
+	"	`suppl`				INTEGER,"
 	"	`suppl_part_no`		TEXT,"
 	"	`price`				REAL,"
 	"	`price_vol`			INTEGER,"
@@ -76,7 +84,8 @@ const char *sql_create[] = {
 	"	`description`		TEXT,"
 	"	FOREIGN KEY(`category`) REFERENCES `category`(`id`),"
 	"	FOREIGN KEY(`footprint`) REFERENCES `footprint`(`id`),"
-	"	FOREIGN KEY(`temp`) REFERENCES `temp`(`id`)"
+	"	FOREIGN KEY(`temp`) REFERENCES `temp`(`id`),"
+	"	FOREIGN KEY(`suppl`) REFERENCES `suppl`(`id`)"
 	");",
 
 	"INSERT INTO `category` (name) VALUES ('Resistor');",
@@ -105,7 +114,10 @@ const char *sql_create[] = {
 	"INSERT INTO `footprint` (name, mounting, description) VALUES ('0402', 2, 'Metric 1005');",
 	"INSERT INTO `footprint` (name, mounting, description) VALUES ('0603', 2, 'Metric 1608');",
 	"INSERT INTO `footprint` (name, mounting, description) VALUES ('0805', 2, 'Metric 2012');",
-	"INSERT INTO `footprint` (name, mounting, description) VALUES ('1206', 2, 'Metric 3216');"
+	"INSERT INTO `footprint` (name, mounting, description) VALUES ('1206', 2, 'Metric 3216');",
+
+	"INSERT INTO `suppl` (name, domain, description) VALUES ('Digikey', 'digikey.com', 'Digi-Key, USD');",
+	"INSERT INTO `suppl` (name, domain, description) VALUES ('Newark', 'www.newark.com', 'Newark/Element14, USD');"
 };
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -279,14 +291,29 @@ void MainWindow::on_action_temp_triggered()
 	update_view();
 }
 
+void MainWindow::on_action_suppl_triggered()
+{
+	DialogSuppl dialog;
+	dialog.setModal(true);
+	dialog.exec();
+	update_view();
+}
+
 void MainWindow::on_action_google_triggered()
 {
 	QModelIndexList selection = ui->tableView->selectionModel()->selectedIndexes();
 
 	if (selection.count() > 0) {
+		QSqlQuery query;
 		QString part = model->index(selection.at(0).row(), model->fieldIndex("part_no")).data().toString();
-		QString suppl = model->index(selection.at(0).row(), model->fieldIndex("suppl")).data().toString();
-		QDesktopServices::openUrl(QUrl("https://www.google.com/search?q=" + part + "+" + suppl));
+		int id = model->index(selection.at(0).row(), model->fieldIndex("suppl")).data().toInt();
+		QString url = "https://www.google.com/search?q=" + part;
+		query.prepare("SELECT domain FROM suppl WHERE id = :id");
+		query.bindValue(":id", id);
+		if (query.exec() && query.next() && query.value(0).toString().length() > 3)
+			url += " site:" + query.value(0).toString();
+			
+		QDesktopServices::openUrl(QUrl(url));
 	}
 }
 
@@ -355,6 +382,7 @@ void MainWindow::update_controls()
 	ui->action_type->setEnabled(db_open);
 	ui->action_footprint->setEnabled(db_open);
 	ui->action_temp->setEnabled(db_open);
+	ui->action_suppl->setEnabled(db_open);
 	ui->action_google->setEnabled(selected);
 	ui->lb_db->setText(db_open ? db.databaseName() : "No database open");
 	if (model != NULL)
@@ -542,5 +570,3 @@ void MainWindow::setup_footprint()
 	if (cur_index != -1)
 		ui->cb_footprint->setCurrentIndex(cur_index);
 }
-
-

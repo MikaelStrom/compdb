@@ -458,6 +458,7 @@
     <addaction name="action_footprint"/>
     <addaction name="action_type"/>
     <addaction name="action_temp"/>
+    <addaction name="action_suppl"/>
    </widget>
    <widget class="QMenu" name="menuComponent">
     <property name="title">
@@ -649,6 +650,17 @@
   <action name="action_about">
    <property name="text">
     <string>About</string>
+   </property>
+  </action>
+  <action name="action_suppl">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Supplier</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
  </widget>

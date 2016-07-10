@@ -43,13 +43,6 @@
        </property>
       </widget>
      </item>
-     <item row="10" column="1">
-      <widget class="QLineEdit" name="le_supplier">
-       <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
      <item row="13" column="0">
       <widget class="QLabel" name="label_12">
        <property name="text">
@@ -366,6 +359,29 @@
        </property>
       </widget>
      </item>
+     <item row="10" column="1">
+      <widget class="QComboBox" name="cb_supplier">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::StrongFocus</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="2">
+      <widget class="QToolButton" name="btn_suppl">
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
+       <property name="text">
+        <string>Edit...</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>
@@ -391,7 +407,6 @@
   <tabstop>le_tolerance</tabstop>
   <tabstop>cb_temp</tabstop>
   <tabstop>sp_count</tabstop>
-  <tabstop>le_supplier</tabstop>
   <tabstop>le_supplier_part_no</tabstop>
   <tabstop>sp_price</tabstop>
   <tabstop>sp_volume</tabstop>
