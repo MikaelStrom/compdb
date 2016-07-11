@@ -19,6 +19,7 @@
 
 #include <QComboBox>
 #include <QSpinBox>
+#include <QDoubleSpinBox>
 #include <QDebug>
 #include <QSqlError>
 #include "rel_delegate.h"
@@ -101,8 +102,17 @@ QWidget* RelationDelegate::createEditor(QWidget *parent,
 		{
 			QSpinBox *editor = new QSpinBox(parent);
 			editor->setFrame(false);
-			editor->setMinimum(0);
-			editor->setMaximum(10000000);
+			editor->setRange(-1000000, 1000000);
+			e = editor;
+			break;
+		}
+		case COLUMN_PRICE:
+		{
+			QDoubleSpinBox *editor = new QDoubleSpinBox(parent);
+			editor->setFrame(false);
+			editor->setRange(-1000000.0, 1000000.0);
+			editor->setSingleStep(0.1);
+			editor->setDecimals(6);
 			e = editor;
 			break;
 		}
@@ -137,6 +147,13 @@ void RelationDelegate::setEditorData(QWidget *editor, const QModelIndex &index) 
 			spinBox->setValue(value);
 			break;
 		}
+		case COLUMN_PRICE:
+		{
+			double value = index.model()->data(index, Qt::EditRole).toDouble();
+			QDoubleSpinBox *spinBox = static_cast<QDoubleSpinBox*>(editor);
+			spinBox->setValue(value);
+			break;
+		}
 		default:
 			QStyledItemDelegate::setEditorData(editor, index);
 			break;
@@ -166,6 +183,14 @@ void RelationDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
 			QSpinBox *spinBox = static_cast<QSpinBox*>(editor);
 			spinBox->interpretText();
 			int value = spinBox->value();
+			model->setData(index, value, Qt::EditRole);
+			break;
+		}
+		case COLUMN_PRICE:
+		{
+			QDoubleSpinBox *spinBox = static_cast<QDoubleSpinBox*>(editor);
+			spinBox->interpretText();
+			double value = spinBox->value();
 			model->setData(index, value, Qt::EditRole);
 			break;
 		}
@@ -203,7 +228,7 @@ void RelationDelegate::initStyleOption(QStyleOptionViewItem *option, const QMode
 
 	QVariant value = index.data(Qt::DisplayRole);
 
-	if(index.column() == COLUMN_CATEGORY || index.column() == COLUMN_FOOTPRINT || 
+	if(index.column() == COLUMN_CATEGORY || index.column() == COLUMN_FOOTPRINT ||
 	   index.column() == COLUMN_TEMP || index.column() == COLUMN_SUPPL) {
 		if (value.isValid() && !value.isNull()) {
 			int id = index.model()->data(index, Qt::EditRole).toInt();

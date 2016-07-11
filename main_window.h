@@ -26,6 +26,7 @@
 #include <QtSql>
 #include <QSqlError>
 #include "rel_delegate.h"
+#include "sort_proxy.h"
 
 namespace Ui {
 class MainWindow;
@@ -71,8 +72,10 @@ private:
 	Ui::MainWindow *ui;
 	QSqlDatabase db;
 	QSqlTableModel *model;
+	SortProxy sort_proxy;
 	RelationDelegate *delegate;
 	QString doc_dir;
+	bool loaded;
 
 	void update_controls();
 	void update_view();

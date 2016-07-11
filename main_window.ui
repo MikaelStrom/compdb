@@ -167,11 +167,6 @@
             <property name="focusPolicy">
              <enum>Qt::StrongFocus</enum>
             </property>
-            <item>
-             <property name="text">
-              <string>&lt;All&gt;</string>
-             </property>
-            </item>
            </widget>
           </item>
           <item>
@@ -214,11 +209,6 @@
             <property name="focusPolicy">
              <enum>Qt::StrongFocus</enum>
             </property>
-            <item>
-             <property name="text">
-              <string>&lt;All&gt;</string>
-             </property>
-            </item>
            </widget>
           </item>
           <item>

@@ -123,7 +123,8 @@ const char *sql_create[] = {
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow),
-	model(NULL)
+	model(NULL),
+	loaded(false)
 {
 	ui->setupUi(this);
 	setCentralWidget(ui->centralWidget);
@@ -144,6 +145,7 @@ MainWindow::~MainWindow()
 {
 	db.close();
 	delete ui;
+	delete delegate;
 }
 
 void MainWindow::selection_changed(const QItemSelection &, const QItemSelection &)
@@ -312,7 +314,7 @@ void MainWindow::on_action_google_triggered()
 		query.bindValue(":id", id);
 		if (query.exec() && query.next() && query.value(0).toString().length() > 3)
 			url += " site:" + query.value(0).toString();
-			
+
 		QDesktopServices::openUrl(QUrl(url));
 	}
 }
@@ -391,6 +393,11 @@ void MainWindow::update_controls()
 
 void MainWindow::update_view()
 {
+	if (! loaded)
+		return;
+
+	sort_proxy.update_tables();
+
 	int selection = ui->tableView->selectionModel()->currentIndex().row();
 	int category = ui->cb_category->currentData().toInt();
 	int footprint = ui->cb_footprint->currentData().toInt();
@@ -437,8 +444,13 @@ bool MainWindow::open_db(QString fname)
 {
 	QSqlTableModel *old = model;
 
+	loaded = false;
+
 	if (model)
 		model->clear();
+
+	ui->cb_category->clear();
+	ui->cb_footprint->clear();
 
 	setWindowFilePath("");
 	setWindowTitle(QApplication::applicationName());
@@ -481,7 +493,8 @@ bool MainWindow::open_db(QString fname)
 		return false;
 	}
 
-	ui->tableView->setModel(model);
+	sort_proxy.setSourceModel(model);
+	ui->tableView->setModel(&sort_proxy);
 	ui->tableView->setItemDelegate(delegate);
 	ui->tableView->hideColumn(0);
 	ui->tableView->resizeColumnsToContents();
@@ -500,13 +513,23 @@ bool MainWindow::open_db(QString fname)
 	setWindowFilePath(fname);
 	setWindowTitle(QApplication::applicationName() + " - " + fname);
 
+	loaded = true;
+
 	return true;
 }
 
 bool MainWindow::create_db(QString fname)
 {
+	loaded = false;
+
 	if (db.open())
 		db.close();
+
+	if (model)
+		model->clear();
+
+	ui->cb_category->clear();
+	ui->cb_footprint->clear();
 
 	db.setDatabaseName(fname);
 
@@ -531,11 +554,11 @@ bool MainWindow::create_db(QString fname)
 
 void MainWindow::setup_category()
 {
-	int cur_index = ui->cb_category->currentIndex();
+	int cur_id = -1;
+	if (ui->cb_category->currentIndex() != -1)
+		cur_id = ui->cb_category->currentData().toInt();
 
-	while (ui->cb_category->count() > 0)
-		ui->cb_category->removeItem(0);
-
+	ui->cb_category->clear();
 	ui->cb_category->addItem("<All>", QVariant(-1));
 
 	QSqlQuery query;
@@ -546,17 +569,19 @@ void MainWindow::setup_category()
 		ui->cb_category->addItem(name, QVariant(id));
 	}
 
-	if (cur_index != -1)
-		ui->cb_category->setCurrentIndex(cur_index);
+	if (cur_id == -1)
+		ui->cb_category->setCurrentIndex(0);
+	else
+		ui->cb_category->setCurrentIndex(ui->cb_category->findData(cur_id));
 }
 
 void MainWindow::setup_footprint()
 {
-	int cur_index = ui->cb_footprint->currentIndex();
+	int cur_id = -1;
+	if (ui->cb_footprint->currentIndex() != -1)
+		cur_id = ui->cb_footprint->currentData().toInt();
 
-	while (ui->cb_footprint->count() > 0)
-		ui->cb_footprint->removeItem(0);
-
+	ui->cb_footprint->clear();
 	ui->cb_footprint->addItem("<All>", QVariant(-1));
 
 	QSqlQuery query;
@@ -567,6 +592,8 @@ void MainWindow::setup_footprint()
 		ui->cb_footprint->addItem(name, QVariant(id));
 	}
 
-	if (cur_index != -1)
-		ui->cb_footprint->setCurrentIndex(cur_index);
+	if (cur_id == -1)
+		ui->cb_footprint->setCurrentIndex(0);
+	else
+		ui->cb_footprint->setCurrentIndex(ui->cb_footprint->findData(cur_id));
 }
